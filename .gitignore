@@ -26,6 +26,19 @@ dist/
 *.pem
 *.zip
 
+# GitHub Pages — generated from PRIVACY.md in CI (see .github/workflows/pages.yml)
+docs/privacy/
+
+# Chrome Web Store listing workspace (local upload assets + dashboard copy; not in git)
+# Screenshot sources in repo: config/examples/new_tab_memo_*.png
+# Published privacy policy: repo-root PRIVACY.md → GitHub Pages
+config/store-listing/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Local Stripe URL (commit config/examples/support-payment.url.example only)
 support-payment.url
 support-payment.url.local
