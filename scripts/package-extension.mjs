@@ -17,7 +17,7 @@ const SLUG = "new-tab-memo-board";
 
 const ROOT_FILES = [
   "manifest.json",
-  "background.js",
+  "app/background.js",
   "shared.js",
   "newtab.html",
   "newtab.css",

@@ -23,7 +23,7 @@
       "newtab": "newtab.html"
     },
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "app/background.js"
     },
     "permissions": [
       "storage",

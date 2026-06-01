@@ -53,7 +53,7 @@ UI language supports **Japanese, English, Chinese (Simplified), Korean, Spanish,
 | --- | --- | --- |
 | Platform | Chrome Extension **Manifest V3** | `chrome_url_overrides.newtab` |
 | Frontend | HTML / CSS / **Vanilla JavaScript** | No framework |
-| Background | **Service Worker** (`background.js`) | Clip save, context menu |
+| Background | **Service Worker** (`app/background.js`) | Clip save, context menu |
 | Persistence | `chrome.storage.local` | Columns, tiles, settings, revision tracking |
 | Session | `sessionStorage` | Clipboard tracking (optional auto-paste) |
 | Shared logic | `shared.js` | Loaded via `importScripts` in SW and new tab |
@@ -67,7 +67,7 @@ UI language supports **Japanese, English, Chinese (Simplified), Korean, Spanish,
 flowchart TB
   subgraph client [Browser]
     NT[newtab.html + js modules]
-    SW[background.js Service Worker]
+    SW[app/background.js Service Worker]
     WEB[Any web page]
   end
 
@@ -111,7 +111,7 @@ flowchart LR
   end
 
   subgraph worker [Service Worker]
-    BG[background.js]
+    BG[app/background.js]
     SH[shared.js]
   end
 
@@ -179,7 +179,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   participant User
-  participant BG as background.js
+  participant BG as app/background.js
   participant Tab as Web page tab
   participant Shared as shared.js
   participant Store as chrome.storage.local
@@ -365,7 +365,7 @@ chrome_newtab_prompt_columns/
 ├── shared.js                 # Shared constants, storage merge, security
 ├── config/examples/
 │   └── support-payment.url.example
-├── background.js             # Service Worker (clips, menu)
+├── app/background.js         # Service Worker (clips, menu)
 ├── assets/clip/
 │   ├── clip-save-modal.js/css  # Save modal (page injection)
 │   └── clip-save-toast.js/css  # Save toast (page injection)
