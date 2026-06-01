@@ -8,7 +8,7 @@ const result = spawnSync(
   process.execPath,
   [
     "--test",
-    "shared.test.mjs",
+    "tests/shared.test.mjs",
     "tests/domain.test.mjs",
     "tests/delete-flow.test.mjs",
     "tests/speech-input.test.mjs",

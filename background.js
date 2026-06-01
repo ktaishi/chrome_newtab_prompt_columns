@@ -115,11 +115,11 @@ async function injectClipSaveToast(tabId) {
 
   await chrome.scripting.insertCSS({
     target: { tabId },
-    files: ["clip-save-toast.css"]
+    files: ["assets/clip/clip-save-toast.css"]
   });
   await chrome.scripting.executeScript({
     target: { tabId },
-    files: ["clip-save-toast.js"]
+    files: ["assets/clip/clip-save-toast.js"]
   });
   clipToastInjectedTabs.add(tabId);
 }
@@ -174,11 +174,11 @@ async function injectClipSaveModal(tabId) {
 
   await chrome.scripting.insertCSS({
     target: { tabId },
-    files: ["clip-save-modal.css"]
+    files: ["assets/clip/clip-save-modal.css"]
   });
   await chrome.scripting.executeScript({
     target: { tabId },
-    files: ["clip-save-modal.js"]
+    files: ["assets/clip/clip-save-modal.js"]
   });
   clipModalInjectedTabs.add(tabId);
 }

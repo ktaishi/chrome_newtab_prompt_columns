@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const root = dirname(fileURLToPath(import.meta.url));
+const testDir = dirname(fileURLToPath(import.meta.url));
+const root = join(testDir, "..");
 const sharedSource = readFileSync(join(root, "shared.js"), "utf8");
 eval(sharedSource);
 const S = globalThis.MemoBoardShared;

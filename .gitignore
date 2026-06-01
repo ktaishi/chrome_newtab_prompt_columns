@@ -26,7 +26,7 @@ dist/
 *.pem
 *.zip
 
-# Local Stripe URL (commit support-payment.url.example only)
+# Local Stripe URL (commit config/examples/support-payment.url.example only)
 support-payment.url
 support-payment.url.local
 

@@ -116,8 +116,8 @@ flowchart LR
   end
 
   subgraph inject [On-demand page scripts]
-    MODAL[clip-save-modal.js]
-    TOAST[clip-save-toast.js]
+    MODAL[assets/clip/clip-save-modal.js]
+    TOAST[assets/clip/clip-save-toast.js]
   end
 
   HTML --> EVT
@@ -183,7 +183,7 @@ sequenceDiagram
   participant Tab as Web page tab
   participant Shared as shared.js
   participant Store as chrome.storage.local
-  participant Toast as clip-save-toast.js
+  participant Toast as assets/clip/clip-save-toast.js
 
   User->>BG: Context menu or extension icon
   BG->>Tab: scripting getSelection
@@ -329,7 +329,7 @@ Domain logic is verified in Node.js (excluding live Obsidian / OpenAI calls).
 node scripts/run-tests.mjs
 ```
 
-Currently **115 tests** (`shared.test.mjs`, `tests/domain.test.mjs`, `tests/delete-flow.test.mjs`, `tests/speech-input.test.mjs`).
+Currently **115 tests** (`tests/shared.test.mjs`, `tests/domain.test.mjs`, `tests/delete-flow.test.mjs`, `tests/speech-input.test.mjs`).
 
 ### Package for distribution
 
@@ -348,7 +348,7 @@ Core features stay free. To show **Settings → Support development → Tip via 
 1. In [Stripe Dashboard](https://dashboard.stripe.com/), open **Payment links** → **Create**
 2. Use a **one-time** link; enable **Customers choose what to pay** for voluntary tips
 3. Copy the `https://buy.stripe.com/...` (or `https://donate.stripe.com/...`) URL
-4. Set it in `js/01-constants.js` as `SUPPORT_STRIPE_PAYMENT_URL` (see `support-payment.url.example`)
+4. Set it in `js/01-constants.js` as `SUPPORT_STRIPE_PAYMENT_URL` (see `config/examples/support-payment.url.example`)
 5. Rebuild the store ZIP: `node scripts/package-extension.mjs`
 
 If `SUPPORT_STRIPE_PAYMENT_URL` is empty, the support section is hidden. Only `https://*.stripe.com` hosts are accepted.
@@ -363,10 +363,12 @@ For Chrome Web Store: mention optional Stripe tips in the listing description an
 chrome_newtab_prompt_columns/
 ├── manifest.json
 ├── shared.js                 # Shared constants, storage merge, security
-├── shared.test.mjs
+├── config/examples/
+│   └── support-payment.url.example
 ├── background.js             # Service Worker (clips, menu)
-├── clip-save-modal.js/css    # Save modal (page injection)
-├── clip-save-toast.js/css    # Save toast (page injection)
+├── assets/clip/
+│   ├── clip-save-modal.js/css  # Save modal (page injection)
+│   └── clip-save-toast.js/css  # Save toast (page injection)
 ├── newtab.html / newtab.css  # New tab UI
 ├── js/
 │   ├── load-order.json       # Script load order
@@ -383,6 +385,8 @@ chrome_newtab_prompt_columns/
 │   ├── utils/
 │   └── events.js             # Event wiring and bootstrap
 ├── tests/
+│   ├── shared.test.mjs
+│   └── ...
 ├── scripts/
 │   ├── run-tests.mjs
 │   ├── package-extension.mjs      # Distribution ZIP

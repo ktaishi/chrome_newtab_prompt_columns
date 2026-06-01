@@ -21,10 +21,10 @@ const ROOT_FILES = [
   "shared.js",
   "newtab.html",
   "newtab.css",
-  "clip-save-modal.js",
-  "clip-save-modal.css",
-  "clip-save-toast.js",
-  "clip-save-toast.css",
+  "assets/clip/clip-save-modal.js",
+  "assets/clip/clip-save-modal.css",
+  "assets/clip/clip-save-toast.js",
+  "assets/clip/clip-save-toast.css",
 ];
 
 const ICON_FILES = [
