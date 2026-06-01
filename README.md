@@ -56,7 +56,7 @@ UI language supports **Japanese, English, Chinese (Simplified), Korean, Spanish,
 | Background | **Service Worker** (`app/background.js`) | Clip save, context menu |
 | Persistence | `chrome.storage.local` | Columns, tiles, settings, revision tracking |
 | Session | `sessionStorage` | Clipboard tracking (optional auto-paste) |
-| Shared logic | `shared.js` | Loaded via `importScripts` in SW and new tab |
+| Shared logic | `app/shared.js` | Loaded via `importScripts` in SW and new tab |
 | External API (optional) | Obsidian Local REST API | When configured. localhost:27123 / 27124 |
 | External API (optional) | OpenAI Chat Completions | **Only when API Key is set**. Two-step genre classification + structured summary. Model as of 2026-05-26: `gpt-4o-mini` (`js/01-constants.js` / `js/services/openai.js`; may change in future releases) |
 | Speech input | **Web Speech API** (browser) | Real-time dictation in the tile modal (Chrome / Edge). No Whisper / OpenAI audio API |
@@ -66,7 +66,7 @@ UI language supports **Japanese, English, Chinese (Simplified), Korean, Spanish,
 ```mermaid
 flowchart TB
   subgraph client [Browser]
-    NT[newtab.html + js modules]
+    NT[app/newtab.html + js modules]
     SW[app/background.js Service Worker]
     WEB[Any web page]
   end
@@ -100,7 +100,7 @@ The extension splits into three parts: **new tab UI**, **Service Worker**, and *
 ```mermaid
 flowchart LR
   subgraph newtab [New Tab UI]
-    HTML[newtab.html]
+    HTML[app/newtab.html]
     EVT[events.js bootstrap]
     UI[ui render modal sidebar settings]
     DOM[domain tags tiles markdown urls youtube]
@@ -112,7 +112,7 @@ flowchart LR
 
   subgraph worker [Service Worker]
     BG[app/background.js]
-    SH[shared.js]
+    SH[app/shared.js]
   end
 
   subgraph inject [On-demand page scripts]
@@ -136,7 +136,7 @@ flowchart LR
 
 ### Module layout
 
-`newtab.html` loads `js/` modules via explicit `<script>` tags. `js/load-order.json` mirrors that order for packaging and tests. Modules communicate via global functions at runtime (no build step).
+`app/newtab.html` loads `js/` modules via explicit `<script>` tags. `js/load-order.json` mirrors that order for packaging and tests. Modules communicate via global functions at runtime (no build step).
 
 | Directory | Responsibility |
 | --- | --- |
@@ -148,7 +148,7 @@ flowchart LR
 | `scripts/generate-genre-taxonomy.mjs` | Source generator for `openai-genre-taxonomy.js` |
 | `mermaid-sandbox.html` | Sandboxed Mermaid SVG rendering for Markdown preview |
 | `js/ui/` | Rendering, modal, sidebar, settings |
-| `shared.js` | Constants, normalization, `saveBoardState`, clip append |
+| `app/shared.js` | Constants, normalization, `saveBoardState`, clip append |
 
 **The source of truth for development is the `js/` modules** (edit modules directly; no monolith rebuild step).
 
@@ -163,7 +163,7 @@ sequenceDiagram
   participant User
   participant Modal as modal-session.js
   participant Board as storage/board.js
-  participant Shared as shared.js
+  participant Shared as app/shared.js
   participant Store as chrome.storage.local
 
   User->>Modal: Open tile and edit
@@ -181,7 +181,7 @@ sequenceDiagram
   participant User
   participant BG as app/background.js
   participant Tab as Web page tab
-  participant Shared as shared.js
+  participant Shared as app/shared.js
   participant Store as chrome.storage.local
   participant Toast as assets/clip/clip-save-toast.js
 
@@ -362,14 +362,15 @@ For Chrome Web Store: mention optional Stripe tips in the listing description an
 ```
 chrome_newtab_prompt_columns/
 ├── manifest.json
-├── shared.js                 # Shared constants, storage merge, security
+├── app/shared.js             # Shared constants, storage merge, security
 ├── config/examples/
 │   └── support-payment.url.example
 ├── app/background.js         # Service Worker (clips, menu)
 ├── assets/clip/
 │   ├── clip-save-modal.js/css  # Save modal (page injection)
 │   └── clip-save-toast.js/css  # Save toast (page injection)
-├── newtab.html / newtab.css  # New tab UI
+├── app/newtab.html           # New tab UI (HTML)
+├── newtab.css                # New tab UI (styles)
 ├── js/
 │   ├── load-order.json       # Script load order
 │   ├── i18n.js / i18n.messages.js / i18n.messages.locales.js

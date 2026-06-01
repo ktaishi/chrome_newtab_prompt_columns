@@ -18,8 +18,8 @@ const SLUG = "new-tab-memo-board";
 const ROOT_FILES = [
   "manifest.json",
   "app/background.js",
-  "shared.js",
-  "newtab.html",
+  "app/shared.js",
+  "app/newtab.html",
   "newtab.css",
   "assets/clip/clip-save-modal.js",
   "assets/clip/clip-save-modal.css",

@@ -122,7 +122,7 @@ export function loadDeleteFlowModules() {
   globalThis.alert = () => {};
 
   loadScripts([
-    "shared.js",
+    "app/shared.js",
     "js/01-constants.js",
     "js/00-shared-import.js",
     "js/domain/tags.js",
@@ -191,7 +191,7 @@ export function loadDomainModules(options = {}) {
   loadScripts(["js/i18n.messages.js", "js/i18n.messages.locales.js", "js/i18n.js"]);
 
   const scripts = [
-    "shared.js",
+    "app/shared.js",
     "js/01-constants.js",
     "js/00-shared-import.js",
     "js/domain/tags.js",
