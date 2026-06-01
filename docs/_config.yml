@@ -1,0 +1,6 @@
+title: New Tab Memo Board
+description: Privacy Policy for the New Tab Memo Board Chrome extension
+baseurl: "/chrome_newtab_prompt_columns"
+url: "https://ktaishi.github.io"
+theme: minima
+markdown: kramdown

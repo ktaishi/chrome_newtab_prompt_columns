@@ -464,6 +464,9 @@ The API Key is stored in `chrome.storage.local` only. JSON backup and import **e
 
 ## Privacy
 
+**Privacy policy (GitHub Pages):** https://ktaishi.github.io/chrome_newtab_prompt_columns/privacy/  
+Source: [`PRIVACY.md`](PRIVACY.md) in this repository.
+
 - Memo data stays **in the user’s browser** (`chrome.storage.local`); nothing is sent to the extension author’s servers
 - OpenAI is used **only when the user sets an API Key** (no AI button and no API calls otherwise)
 - Speech input uses the **browser Web Speech API** only; audio is not sent to OpenAI for transcription
