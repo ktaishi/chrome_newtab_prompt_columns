@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Tab Memo Board</title>
+  <link rel="icon" type="image/png" href="icons/icon48.png" />
+  <link rel="stylesheet" href="newtab.css" />
+</head>
+<body>
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-top-chrome">
+      <button id="sidebarToggle" class="sidebar-toggle" type="button" data-i18n-aria-label="sidebar.collapse">‹</button>
+
+      <div class="sidebar-collapsed-icons">
+        <img class="sidebar-collapsed-logo" src="icons/logo.svg" width="26" height="26" alt="" />
+        <button id="sidebarCollapsedTagButton" class="sidebar-mini-button" type="button" data-i18n-aria-label="sidebar.filterByTagAria" data-i18n-title="sidebar.filterByTagAria">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-content">
+      <div class="sidebar-brand">
+        <img class="sidebar-logo" src="icons/logo.svg" width="32" height="32" alt="" />
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">New Tab Memo</span>
+          <span class="sidebar-brand-tagline">Column memo board</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section tag-filter-section">
+        <button id="tagFilterToggle" class="sidebar-collapse-button" type="button" aria-expanded="false">
+          <span data-i18n="sidebar.filterByTag">タグで絞り込み</span>
+          <span id="tagFilterIndicator">＋</span>
+        </button>
+
+        <div id="tagFilterPanel" class="tag-filter-panel" hidden>
+          <button id="clearTagFilterButton" class="tag-filter-clear" type="button" hidden data-i18n="sidebar.clear">クリア</button>
+          <div id="tagFilterList" class="tag-filter-list"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div id="activeFilterLabel" class="active-filter-label" hidden></div>
+        <div id="filledTileList" class="filled-tile-list"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button id="sidebarObsidianSyncButton" class="toolbar-button sidebar-footer-button" type="button" data-i18n="sidebar.obsidianSync">Obsidian同期</button>
+      <button id="settingsButton" class="toolbar-button sidebar-footer-button" type="button" data-i18n="sidebar.settings">設定</button>
+    </div>
+
+    <button id="sidebarCollapsedSettingsButton" class="sidebar-mini-button sidebar-collapsed-settings" type="button" data-i18n-aria-label="sidebar.settings" data-i18n-title="sidebar.settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2" />
+      </svg>
+    </button>
+  </aside>
+
+  <main class="app">
+    <section id="columns" class="columns" data-i18n-aria-label="app.columnsAria" aria-label="プロンプトカラム"></section>
+  </main>
+
+  <dialog id="settingsDialog" class="settings-dialog">
+    <form method="dialog" class="settings-panel">
+      <div class="dialog-header">
+        <h2 data-i18n="settings.title">設定</h2>
+        <button class="dialog-close" value="cancel" data-i18n-aria-label="common.close" aria-label="閉じる">×</button>
+      </div>
+
+      <label class="settings-field">
+        <span data-i18n="settings.language.label">言語</span>
+        <select id="settingsUiLocaleSelect">
+          <option value="auto" data-i18n="settings.language.auto">自動（ブラウザに合わせる）</option>
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="ko">한국어</option>
+          <option value="es">Español</option>
+          <option value="bn">বাংলা</option>
+        </select>
+      </label>
+
+      <label class="settings-field">
+        <span data-i18n="settings.obsidianFolder">Obsidian保存先フォルダ</span>
+        <input id="obsidianFolderInput" type="text" placeholder="Inbox" />
+      </label>
+
+      <label class="settings-field">
+        <span data-i18n="settings.obsidianEndpoint">Obsidian Local REST API URL</span>
+        <input id="obsidianEndpointInput" type="text" placeholder="http://127.0.0.1:27123" />
+      </label>
+
+      <label class="settings-field">
+        <span class="settings-field-label">
+          <span data-i18n="settings.obsidianToken">Obsidian API Key / Token</span>
+          <button
+            id="obsidianTokenHelpButton"
+            class="settings-help-button"
+            type="button"
+            data-i18n-aria-label="settings.obsidianTokenHelpAria"
+            data-i18n-title="settings.obsidianTokenHelpAria"
+          >
+            ?
+          </button>
+        </span>
+        <input id="obsidianTokenInput" type="password" data-i18n-placeholder="settings.obsidianTokenPlaceholder" placeholder="Local REST APIのAPI Key" />
+      </label>
+
+      <label class="settings-field">
+        <span data-i18n="settings.autoPasteClipboard">空タイルを開いたときクリップボードを自動貼り付け</span>
+        <select id="autoPasteClipboardSelect">
+          <option value="on" data-i18n="common.on">ON</option>
+          <option value="off" data-i18n="common.off">OFF</option>
+        </select>
+      </label>
+
+      <p class="settings-note" data-i18n="settings.autoPasteClipboardNote">
+        ON のとき、空のタイルを開くと直近60秒以内にコピーしたテキストを自動で挿入します。
+      </p>
+
+      <label class="settings-field">
+        <span data-i18n="settings.autoBackup">自動バックアップ</span>
+        <select id="autoBackupSelect">
+          <option value="on" data-i18n="common.on">ON</option>
+          <option value="off" data-i18n="common.off">OFF</option>
+        </select>
+      </label>
+
+      <p class="settings-note" data-i18n="settings.autoBackupNote">
+        自動バックアップは1日1回、新規タブを開いたタイミングでJSONをダウンロードします。
+      </p>
+
+      <div class="settings-obsidian-actions">
+        <button id="obsidianSaveButton" class="toolbar-button" type="button" data-i18n="sidebar.obsidianSync">Obsidian同期</button>
+      </div>
+
+      <p class="settings-note" data-i18n="settings.obsidianNote">
+        Obsidian同期には Local REST API プラグインのAPI Keyが必要です。
+      </p>
+
+      <div class="settings-openai-section">
+        <div class="settings-subheading" data-i18n="settings.openaiHeading">OpenAI</div>
+
+        <label class="settings-field">
+          <span data-i18n="settings.openaiKey">OpenAI API Key</span>
+          <input id="openaiApiKeyInput" type="password" placeholder="sk-..." autocomplete="off" />
+        </label>
+
+        <label class="settings-field">
+          <span data-i18n="settings.openaiGenerationModel">AI 生成モデル</span>
+          <select id="openaiGenerationModelSelect"></select>
+        </label>
+
+        <p class="settings-note" data-i18n="settings.openaiGenerationModelNote">
+          サマリー本文の生成に使うモデルです。ChatGPT に近い応答は「GPT-5.3 chat latest」、最高品質は「GPT-5.5」、コスト重視は「GPT-5.4 mini」を選んでください。ジャンル分類は別途軽量モデルを使用します。
+        </p>
+
+        <p class="settings-note" data-i18n="settings.openaiNote">
+          API Key を設定すると、タイル編集モーダルに AI ボタンが表示されます。実行前に URL 取得と OpenAI 送信の確認が表示されます。ローカル/プライベートネットワークの URL は取得しません。キーは JSON バックアップから除外されます。
+        </p>
+
+        <details class="settings-openai-prompts">
+          <summary data-i18n="settings.openaiPromptHeading">AI プロンプト（詳細）</summary>
+
+          <label class="settings-field">
+            <span data-i18n="settings.openaiSystemPrompt">System プロンプト</span>
+            <textarea id="openaiSystemPromptInput" rows="6" spellcheck="false"></textarea>
+          </label>
+
+          <label class="settings-field">
+            <span data-i18n="settings.openaiUserPromptMemo">User プロンプト（メモのみ）</span>
+            <textarea id="openaiUserPromptMemoInput" rows="10" spellcheck="false"></textarea>
+          </label>
+
+          <label class="settings-field">
+            <span data-i18n="settings.openaiUserPromptUrl">User プロンプト（URL あり）</span>
+            <textarea id="openaiUserPromptUrlInput" rows="14" spellcheck="false"></textarea>
+          </label>
+
+          <p class="settings-note" data-i18n="settings.openaiPromptNote">
+            プレースホルダ: System は {{URL_TILE_RULE}} {{SECTION_LIMIT_RULE}} {{YOUTUBE_SYSTEM_RULE}}。User（メモ）は {{MEMO_BODY}}。User（URL）は {{MEMO_BODY}} {{URL_CONTEXTS}} {{YOUTUBE_EXTRA_RULES}}。空欄保存時は組み込みデフォルトを使用します。
+          </p>
+
+          <button id="openaiPromptResetButton" class="toolbar-button settings-inline-button" type="button" data-i18n="settings.openaiPromptReset">
+            デフォルトに戻す
+          </button>
+        </details>
+      </div>
+
+      <div class="settings-data-section">
+        <div class="settings-subheading" data-i18n="settings.dataHeading">データ管理</div>
+        <div class="settings-data-actions">
+          <button id="jsonBackupButton" class="toolbar-button" type="button" data-i18n="settings.jsonBackup">JSON Backup</button>
+          <button id="jsonImportButton" class="toolbar-button" type="button" data-i18n="settings.jsonImport">JSON Import</button>
+          <input id="jsonImportInput" type="file" accept="application/json,.json" hidden />
+        </div>
+      </div>
+
+      <div id="supportDevelopmentSection" class="settings-support-section" hidden>
+        <div class="settings-subheading" data-i18n="settings.supportHeading">開発支援</div>
+        <div class="settings-support-actions">
+          <button
+            id="openSupportPaymentButton"
+            class="toolbar-button"
+            type="button"
+            data-i18n="settings.openSupportPayment"
+          >
+            Stripe で支援する（任意）
+          </button>
+        </div>
+        <p class="settings-note" data-i18n="settings.supportNote">
+          基本機能は無料です。開発の継続を応援したい方は、Stripe の安全な決済ページで任意の金額をお支払いいただけます。支払いは必須ではありません。
+        </p>
+      </div>
+
+      <div class="settings-extension-section">
+        <div class="settings-subheading" data-i18n="settings.extensionHeading">拡張機能</div>
+        <div class="settings-extension-actions">
+          <button id="openExtensionDetailsButton" class="toolbar-button" type="button" data-i18n="settings.openExtensionDetails">拡張機能の詳細を開く</button>
+        </div>
+        <p class="settings-note" data-i18n="settings.extensionNote">
+          新タブ下部の「Chromeをカスタマイズ」フッターは Chrome が表示するものです。非表示にするには、フッター右のメニューから「新タブページのフッターを非表示」を選ぶか、Customize Chrome の Footer 設定を OFF にしてください。
+        </p>
+      </div>
+
+      <div class="settings-actions">
+        <button id="settingsSaveButton" class="toolbar-button" type="button" data-i18n="settings.save">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="obsidianTokenHelpDialog" class="settings-help-dialog">
+    <div class="settings-help-panel">
+      <div class="dialog-header">
+        <h3 data-i18n="settings.obsidianHelpTitle">Obsidian API Key の設定方法</h3>
+        <button id="obsidianTokenHelpCloseButton" class="dialog-close" type="button" data-i18n-aria-label="common.close" aria-label="閉じる">×</button>
+      </div>
+      <div id="obsidianTokenHelpContent" class="settings-help-content" data-i18n-html="settings.obsidianHelpHtml"></div>
+    </div>
+  </dialog>
+
+  <dialog id="templateDialog" class="template-dialog">
+    <form method="dialog" class="template-panel">
+      <div class="dialog-header">
+        <h2 data-i18n="template.title">テンプレート追加</h2>
+        <button class="dialog-close" value="cancel" data-i18n-aria-label="common.close" aria-label="閉じる">×</button>
+      </div>
+      <div id="templateList" class="template-list"></div>
+    </form>
+  </dialog>
+
+  <dialog id="deleteConfirmDialog" class="confirm-dialog">
+    <form method="dialog" class="confirm-panel">
+      <div class="dialog-header">
+        <h2 data-i18n="delete.title">タイルを削除</h2>
+        <button class="dialog-close" value="cancel" data-i18n-aria-label="common.close" aria-label="閉じる">×</button>
+      </div>
+      <p id="deleteConfirmMessage" class="confirm-message"></p>
+      <div class="confirm-actions">
+        <button type="button" class="toolbar-button delete-cancel-button" data-i18n="delete.cancel">キャンセル</button>
+        <button type="submit" value="confirm" class="toolbar-button confirm-danger" data-i18n="delete.confirm">削除</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="tagAddDialog" class="confirm-dialog tag-add-dialog">
+    <form method="dialog" class="confirm-panel tag-add-panel">
+      <div class="dialog-header">
+        <h2 data-i18n="modal.tagAddTitle">タグを追加</h2>
+        <button class="dialog-close" type="submit" value="cancel" data-i18n-aria-label="common.close" aria-label="閉じる">×</button>
+      </div>
+      <label class="tag-add-input-label" for="tagAddInput" data-i18n="modal.tags">タグ</label>
+      <input
+        id="tagAddInput"
+        class="tag-add-input"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        data-i18n-placeholder="modal.tagsInputPlaceholder"
+        placeholder="todo idea 仕事（スペースまたはカンマ区切り、#不要）"
+      />
+      <p class="tag-add-existing-label" data-i18n="modal.tagExisting">既存のタグから選ぶ</p>
+      <div id="tagAddExistingList" class="tag-add-existing-list"></div>
+      <div class="confirm-actions">
+        <button type="button" class="toolbar-button tag-add-cancel-button" data-i18n="delete.cancel">キャンセル</button>
+        <button type="submit" value="confirm" class="toolbar-button tag-add-confirm-button" data-i18n="modal.tagAddConfirm">追加</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="tileDialog" class="tile-dialog">
+    <div id="aiLoadingOverlay" class="ai-loading-overlay" hidden aria-live="polite" aria-busy="true">
+      <div class="ai-loading-panel" role="status">
+        <div class="ai-loading-spinner" aria-hidden="true"></div>
+        <p id="aiLoadingMessage" class="ai-loading-message" data-i18n="modal.aiLoading">AI解析中...</p>
+      </div>
+    </div>
+
+    <div class="tile-dialog-panel" data-color="white">
+      <div class="modal-body">
+        <div class="modal-editor-scroll">
+          <div class="modal-actions modal-actions-bar">
+            <button id="modalMarkdownToggle" class="icon-button modal-markdown-button" type="button" data-i18n-aria-label="modal.markdownPreview" data-i18n-title="modal.markdownPreview" aria-label="Markdownプレビュー" title="Markdownプレビュー" aria-pressed="false">
+              <svg class="modal-markdown-icon modal-markdown-icon-preview" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              <svg class="modal-markdown-icon modal-markdown-icon-edit" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+              </svg>
+            </button>
+            <button id="modalTemplateButton" class="icon-button" type="button" data-i18n-aria-label="modal.templateAdd" data-i18n-title="modal.templateAdd" aria-label="テンプレート追加" title="テンプレート追加">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm-1 16H6V5h12v14ZM8 7h8v2H8V7Zm0 4h8v2H8v-2Zm0 4h5v2H8v-2Z"/>
+              </svg>
+            </button>
+            <button id="modalAiButton" class="icon-button modal-ai-button" type="button" data-i18n-aria-label="modal.aiSummary" data-i18n-title="modal.aiSummary" aria-label="AIサマリー" title="AIサマリー" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.2 13.3 7.4 18.5 8.7 13.3 10 12 15.2 10.7 10 5.5 8.7 10.7 7.4 12 2.2ZM5.2 16.8l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4Zm13.6 0 .8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4Z"/>
+              </svg>
+            </button>
+            <button id="modalColumnStarButton" class="icon-button modal-column-star-button" type="button" data-i18n-aria-label="tile.star" data-i18n-title="tile.star" aria-label="タイルを列の先頭に固定" title="タイルを列の先頭に固定" aria-pressed="false">
+              <span class="column-star-icon" aria-hidden="true">☆</span>
+            </button>
+            <button id="modalCopyButton" class="icon-button" type="button" data-i18n-aria-label="modal.copy" data-i18n-title="modal.copy" aria-label="コピー" title="コピー">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1Zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm0 16H8V7h11v14Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="modalTitleSection" class="modal-title-section" hidden>
+            <a id="modalYoutubeThumb" class="youtube-thumb modal-youtube-thumb" href="#" target="_blank" rel="noopener noreferrer" hidden>
+              <img alt="YouTube thumbnail" />
+            </a>
+          </div>
+
+          <div class="modal-textarea-wrap">
+            <textarea id="modalTextarea" class="modal-textarea" spellcheck="false" data-i18n-placeholder="modal.titlePlaceholder" placeholder="# タイトル"></textarea>
+            <div class="modal-speech-dock">
+              <button id="modalSpeechButton" class="icon-button modal-speech-button" type="button" data-i18n-aria-label="modal.speechInput" data-i18n-title="modal.speechInput" aria-label="音声入力" title="音声入力" aria-pressed="false" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="modalMarkdownPreview" class="modal-markdown-preview" hidden></div>
+
+          <div id="modalAiSupplementPanel" class="modal-ai-action-overlay" hidden>
+            <div class="modal-ai-action-backdrop" aria-hidden="true"></div>
+            <div
+              class="modal-ai-action-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modalAiActionTitle"
+            >
+              <p id="modalAiActionTitle" class="modal-ai-action-title" data-i18n="modal.aiActionSelect">どう整理しますか？</p>
+              <div
+                class="modal-ai-action-buttons"
+                role="group"
+                data-i18n-aria-label="modal.aiActionGroupAria"
+                aria-label="AIアクション"
+              >
+                <button type="button" class="modal-ai-action-chip" data-ai-action="summary">
+                  <span class="modal-ai-action-chip-circle" aria-hidden="true">📝</span>
+                  <span class="modal-ai-action-chip-label" data-i18n="modal.aiAction.summary">整理する</span>
+                </button>
+                <button type="button" class="modal-ai-action-chip" data-ai-action="deep-dive">
+                  <span class="modal-ai-action-chip-circle" aria-hidden="true">🔍</span>
+                  <span class="modal-ai-action-chip-label" data-i18n="modal.aiAction.deepDive">深掘り</span>
+                </button>
+                <button type="button" class="modal-ai-action-chip" data-ai-action="simple-list">
+                  <span class="modal-ai-action-chip-circle" aria-hidden="true">📋</span>
+                  <span class="modal-ai-action-chip-label" data-i18n="modal.aiAction.simpleList">要点だけ</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="modalAiSupplementField" class="modal-ai-supplement-field" hidden>
+            <div class="modal-ai-supplement-compose">
+              <textarea
+                id="modalAiSupplementInput"
+                class="modal-ai-supplement-input"
+                rows="1"
+                spellcheck="false"
+                data-i18n-aria-label="modal.aiSupplementLabel"
+                data-i18n-placeholder="modal.aiSupplementPlaceholder"
+                aria-label="AIへの追加指示"
+                placeholder="AIへの追加指示（例: 初心者向けにもう少し詳しく / 箇条書きを増やして）"
+              ></textarea>
+              <button
+                id="modalAiSupplementSendButton"
+                class="icon-button modal-ai-supplement-send"
+                type="button"
+                data-i18n-aria-label="modal.aiSupplementSend"
+                data-i18n-title="modal.aiSupplementSend"
+                aria-label="送信"
+                title="送信"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3.4 20.4 21 12 3.4 3.6l1.8 7.2L16 12l-10.8 1.2-1.8 7.2Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-bottom">
+        <div class="modal-color-field">
+          <div id="modalColorPalette" class="color-palette modal-color-palette" data-i18n-aria-label="modal.tileColor" aria-label="タイル色">
+            <button class="color-chip" type="button" data-color="white" data-i18n-aria-label="modal.color.white" aria-label="白"></button>
+            <button class="color-chip" type="button" data-color="blue" data-i18n-aria-label="modal.color.blue" aria-label="青"></button>
+            <button class="color-chip" type="button" data-color="green" data-i18n-aria-label="modal.color.green" aria-label="緑"></button>
+            <button class="color-chip" type="button" data-color="yellow" data-i18n-aria-label="modal.color.yellow" aria-label="黄"></button>
+            <button class="color-chip" type="button" data-color="pink" data-i18n-aria-label="modal.color.pink" aria-label="桃"></button>
+            <button class="color-chip" type="button" data-color="purple" data-i18n-aria-label="modal.color.purple" aria-label="紫"></button>
+            <button class="color-chip" type="button" data-color="gray" data-i18n-aria-label="modal.color.gray" aria-label="灰"></button>
+          </div>
+          <span id="modalUpdatedLabel" class="modal-updated-label" hidden></span>
+        </div>
+        <div class="modal-tags-field">
+          <div id="modalTagsList" class="modal-tags-list" hidden></div>
+          <button id="modalTagAddToggle" class="modal-tag-add-link" type="button" data-i18n="modal.tagAddLink">+タグ追加</button>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button id="modalDeleteButton" class="icon-button modal-delete-button" type="button" data-i18n-aria-label="tile.delete" data-i18n-title="tile.delete" aria-label="このタイルを削除" title="このタイルを削除">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12ZM8 9h8v10H8V9Zm7.5-5-1-1h-5l-1 1H5v2h14V4h-3.5Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <template id="columnTemplate">
+    <section class="column">
+      <div class="column-header">
+        <input type="text" class="column-title-input" data-i18n-aria-label="column.title" aria-label="列タイトル" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="column-body">
+        <div class="column-tiles"></div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tileTemplate">
+    <article class="tile" draggable="true" data-i18n-aria-label="tile.drag" data-i18n-title="tile.drag" aria-label="ドラッグして移動" title="ドラッグして移動">
+      <span class="tile-star-badge" aria-hidden="true">★</span>
+      <div class="tile-header">
+        <span class="tile-drag-handle" aria-hidden="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm9-14a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
+          </svg>
+        </span>
+        <div class="tile-title-display" data-i18n-aria-label="tile.titleAria" aria-label="タイルタイトル"></div>
+      </div>
+
+      <div class="tile-body">
+        <div class="markdown-preview"></div>
+      </div>
+
+      <div class="tile-footer">
+        <div class="tile-actions">
+          <button class="copy-button icon-button" type="button" data-i18n-aria-label="common.copy" data-i18n-title="common.copy" aria-label="コピー" title="コピー">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1Zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm0 16H8V7h11v14Z"/>
+            </svg>
+          </button>
+
+          <button class="clear-button icon-button" type="button" data-i18n-aria-label="tile.delete" data-i18n-title="tile.delete" aria-label="このタイルを削除" title="このタイルを削除">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12ZM8 9h8v10H8V9Zm7.5-5-1-1h-5l-1 1H5v2h14V4h-3.5Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="shared.js"></script>
+  <script src="js/00-shared-import.js"></script>
+  <script src="js/01-constants.js"></script>
+  <script src="js/02-dom-state.js"></script>
+  <script src="js/i18n.messages.js"></script>
+  <script src="js/i18n.messages.locales.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/03-templates.js"></script>
+  <script src="js/domain/tags.js"></script>
+  <script src="js/domain/tiles.js"></script>
+  <script src="js/storage/board.js"></script>
+  <script src="js/domain/markdown.js"></script>
+  <script src="js/domain/youtube.js"></script>
+  <script src="js/ui/modal-editor.js"></script>
+  <script src="js/services/clipboard.js"></script>
+  <script src="js/ui/tile-ops.js"></script>
+  <script src="js/ui/sidebar.js"></script>
+  <script src="js/ui/render.js"></script>
+  <script src="js/ui/modal-session.js"></script>
+  <script src="js/utils/export.js"></script>
+  <script src="js/services/obsidian-ui.js"></script>
+  <script src="js/services/openai-ui.js"></script>
+  <script src="js/services/speech-input.js"></script>
+  <script src="js/domain/urls.js"></script>
+  <script src="js/services/openai-prompt-defaults.js"></script>
+  <script src="js/services/openai-models.js"></script>
+  <script src="js/services/openai-genre-taxonomy-loader.js"></script>
+  <script src="js/services/openai-prompts.js"></script>
+  <script src="js/services/openai.js"></script>
+  <script src="js/services/obsidian.js"></script>
+  <script src="js/services/backup.js"></script>
+  <script src="js/ui/settings.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>

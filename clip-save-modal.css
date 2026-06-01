@@ -1,0 +1,160 @@
+#clip-save-modal-host {
+  all: initial;
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#clip-save-modal-host *,
+#clip-save-modal-host *::before,
+#clip-save-modal-host *::after {
+  box-sizing: border-box;
+}
+
+#clip-save-modal-host .clip-save-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+#clip-save-modal-host .clip-save-panel {
+  position: relative;
+  width: min(380px, calc(100vw - 32px));
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+#clip-save-modal-host .clip-save-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#clip-save-modal-host .clip-save-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+#clip-save-modal-host .clip-save-close {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+#clip-save-modal-host .clip-save-close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+#clip-save-modal-host .clip-save-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 16px;
+}
+
+#clip-save-modal-host .clip-save-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#clip-save-modal-host .clip-save-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+#clip-save-modal-host .clip-save-input,
+#clip-save-modal-host .clip-save-textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #111827;
+  background: #fff;
+  outline: none;
+}
+
+#clip-save-modal-host .clip-save-input:focus,
+#clip-save-modal-host .clip-save-textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+#clip-save-modal-host .clip-save-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+#clip-save-modal-host .clip-save-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+#clip-save-modal-host .clip-save-button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#clip-save-modal-host .clip-save-button-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+#clip-save-modal-host .clip-save-button-secondary:hover {
+  background: #e5e7eb;
+}
+
+#clip-save-modal-host .clip-save-button-primary {
+  background: #4f46e5;
+  color: #fff;
+}
+
+#clip-save-modal-host .clip-save-button-primary:hover {
+  background: #4338ca;
+}
+
+#clip-save-modal-host .clip-save-button-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#clip-save-modal-host .clip-save-status {
+  min-height: 18px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+#clip-save-modal-host .clip-save-status.is-error {
+  color: #dc2626;
+}
+
+#clip-save-modal-host .clip-save-status.is-success {
+  color: #059669;
+}
