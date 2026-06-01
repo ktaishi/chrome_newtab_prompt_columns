@@ -371,10 +371,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.body.classList.toggle("sidebar-collapsed", Boolean(settings.sidebarCollapsed));
   }
 
+  await maybeAutoBackup();
   applyLocale(settings.uiLocale);
 
   window.addEventListener("resize", () => {
     updateSidebarToggleLabel();
   });
-  maybeAutoBackup();
 });
