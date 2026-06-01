@@ -2,7 +2,7 @@
 
 [![Chrome Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)](manifest.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](README.md#license)
-[![Version](https://img.shields.io/badge/version-1.25.1-lightgrey)](manifest.json)
+[![Version](https://img.shields.io/badge/version-1.26.0-lightgrey)](manifest.json)
 
 A Chrome extension that replaces the new tab page with a **column-style memo board**.  
 Organize prompts, todos, notes, and web clips as tiles—with tagging, Markdown preview, Obsidian export, and JSON backup—all on one screen. OpenAI summaries are available **only when you enter an API Key in Settings**.
