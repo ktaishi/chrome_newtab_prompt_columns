@@ -478,7 +478,8 @@ The API Key is stored in `chrome.storage.local` only. JSON backup and import **e
 | `activeTab` / `scripting` | Read selection; inject modal/toast on demand |
 | `host_permissions` localhost:27123/27124 | Obsidian Local REST API (when configured) |
 | `host_permissions` api.openai.com | OpenAI Chat Completions (**only when API Key is set**) |
-| `host_permissions` http/https | URL fetch for AI summary (**only when API Key is set**; internal URLs rejected in code) |
+| `optional_host_permissions` http/https | URL fetch for AI summary / URL clip (**runtime prompt**; internal URLs rejected in code) |
+| `host_permissions` youtube.com | YouTube page / oEmbed fetch for optional AI features |
 | `sandbox.pages` | `mermaid-sandbox.html` for isolated Mermaid rendering |
 | CSP `extension_pages` | `script-src 'self' 'wasm-unsafe-eval'` (Mermaid WASM in sandbox only) |
 

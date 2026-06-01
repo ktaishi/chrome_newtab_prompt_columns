@@ -21,6 +21,7 @@
   "services/obsidian-ui.js",
   "services/openai-ui.js",
   "services/speech-input.js",
+  "services/url-fetch-permissions.js",
   "domain/urls.js",
   "services/openai-prompt-defaults.js",
   "services/openai-genre-taxonomy-loader.js",

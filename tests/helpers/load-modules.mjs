@@ -196,6 +196,7 @@ export function loadDomainModules(options = {}) {
     "js/00-shared-import.js",
     "js/domain/tags.js",
     "js/domain/tiles.js",
+    "js/services/url-fetch-permissions.js",
     "js/domain/urls.js",
     "js/domain/markdown.js",
     "js/domain/youtube.js",

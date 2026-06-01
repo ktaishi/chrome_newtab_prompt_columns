@@ -339,7 +339,8 @@ Object.assign(I18N_MESSAGES, {
     "validation.storage.conflict": "无法解决存储更新冲突。",
     "fetch.timeout": "超时",
     "fetch.notHtml": "非 HTML",
-    "fetch.failed": "获取失败"
+    "fetch.failed": "获取失败",
+    "fetch.permissionDenied": "未授予获取公开页面的权限。请在 Chrome 权限对话框中允许，或在扩展程序详情中启用网站访问。"
   },
   "ko": {
     "app.title": "New Tab Memo Board",
@@ -498,7 +499,8 @@ Object.assign(I18N_MESSAGES, {
     "validation.storage.conflict": "스토리지 업데이트 충돌을 해결할 수 없습니다.",
     "fetch.timeout": "타임아웃",
     "fetch.notHtml": "비 HTML",
-    "fetch.failed": "가져오기 실패"
+    "fetch.failed": "가져오기 실패",
+    "fetch.permissionDenied": "공개 페이지를 가져올 권한이 없습니다. Chrome 권한 대화상자에서 허용하거나 확장 프로그램 세부정보에서 사이트 액세스를 활성화하세요."
   },
   "es": {
     "app.title": "New Tab Memo Board",
@@ -657,7 +659,8 @@ Object.assign(I18N_MESSAGES, {
     "validation.storage.conflict": "No se pudo resolver el conflicto de almacenamiento.",
     "fetch.timeout": "Tiempo agotado",
     "fetch.notHtml": "No HTML",
-    "fetch.failed": "Error al obtener"
+    "fetch.failed": "Error al obtener",
+    "fetch.permissionDenied": "No se concedió permiso para obtener páginas públicas. Permítelo en el diálogo de Chrome o activa el acceso al sitio en los detalles de la extensión."
   },
   "bn": {
     "app.title": "New Tab Memo Board",
@@ -816,6 +819,7 @@ Object.assign(I18N_MESSAGES, {
     "validation.storage.conflict": "স্টোরেজ আপডেট সংঘর্ষ মিটানো যায়নি।",
     "fetch.timeout": "টাইমআউট",
     "fetch.notHtml": "HTML নয়",
-    "fetch.failed": "আনতে ব্যর্থ"
+    "fetch.failed": "আনতে ব্যর্থ",
+    "fetch.permissionDenied": "পাবলিক পেজ আনার অনুমতি দেওয়া হয়নি। Chrome-এর অনুমতি ডায়ালগে অনুমতি দিন বা এক্সটেনশনের বিবরণে সাইট অ্যাক্সেস চালু করুন।"
   }
 });

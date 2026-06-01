@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "New Tab Memo Board",
-    "version": "1.26.0",
+    "version": "1.27.0",
     "description": "Column-style memo board on new tab. Tags, Markdown, Obsidian export, OpenAI summary, JSON backup, and web clipping.",
     "action": {
       "default_title": "タブメモに保存",
@@ -38,6 +38,9 @@
       "https://127.0.0.1:27124/*",
       "https://localhost:27124/*",
       "https://api.openai.com/*",
+      "https://www.youtube.com/*"
+    ],
+    "optional_host_permissions": [
       "http://*/*",
       "https://*/*"
     ],

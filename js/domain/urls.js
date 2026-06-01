@@ -174,6 +174,11 @@ async function fetchUrlPageContext(url) {
     return { url, ok: false, error: validation.reason };
   }
 
+  const permission = await ensureUrlFetchHostPermissions();
+  if (!permission.ok) {
+    return { url, ok: false, error: urlFetchPermissionDeniedMessage() };
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), OPENAI_URL_FETCH_TIMEOUT_MS);
 

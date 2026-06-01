@@ -455,7 +455,8 @@ const I18N_MESSAGES = {
     "validation.storage.conflict": "ストレージの更新競合が解消できませんでした。",
     "fetch.timeout": "タイムアウト",
     "fetch.notHtml": "非HTML",
-    "fetch.failed": "取得失敗"
+    "fetch.failed": "取得失敗",
+    "fetch.permissionDenied": "公開ページを取得する権限が許可されていません。Chrome の権限ダイアログで許可するか、拡張機能の詳細から「任意のサイトへのアクセス」を有効にしてください。"
   },
   en: {
     "app.title": "New Tab Memo Board",
@@ -645,6 +646,7 @@ const I18N_MESSAGES = {
     "validation.storage.conflict": "Could not resolve storage update conflict.",
     "fetch.timeout": "Timeout",
     "fetch.notHtml": "Not HTML",
-    "fetch.failed": "Fetch failed"
+    "fetch.failed": "Fetch failed",
+    "fetch.permissionDenied": "Permission to fetch public pages was not granted. Allow it in Chrome’s permission prompt, or enable site access for this extension in extension details."
   }
 };
