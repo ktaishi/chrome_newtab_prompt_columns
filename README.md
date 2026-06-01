@@ -16,6 +16,7 @@ Organize prompts, todos, notes, and web clips as tiles—with tagging, Markdown 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Key Flows](#key-flows)
@@ -44,6 +45,36 @@ Each time you open a new tab, a **3-column board** appears. Each column holds �
 Column names are stored in data and shown as **editable title inputs** at the top of each column (used for Clipping column detection, Obsidian export, etc.). Placeholders fall back to locale-specific defaults.
 
 UI language supports **Japanese, English, Chinese (Simplified), Korean, Spanish, and Bengali** (Settings → Language: `auto` | `ja` | `en` | `zh` | `ko` | `es` | `bn`). With `auto`, the browser language resolves to one of these locales. Tile “Updated” labels use the same locale for date/time formatting.
+
+---
+
+## Screenshots
+
+Sample content from [`config/examples/sample-import-en.json`](config/examples/sample-import-en.json) (import via Settings → JSON Import).
+
+### Board overview
+
+Three columns (Tasks, Work, Personal) with colored tiles, checklists, and tags.
+
+![New Tab Memo Board — column layout with Tasks, Work, and Personal tiles](config/examples/new_tab_memo_01.png)
+
+### Tile editor
+
+Edit markdown, colors, tags, and optional AI follow-up instructions in the modal.
+
+![Tile editor — Product sync memo with tags and AI instruction field](config/examples/new_tab_memo_02.png)
+
+### Tag filter (sidebar)
+
+Filter tiles by tag from the sidebar; active filter shows matching cards.
+
+![Sidebar — filter by tag with #meeting selected](config/examples/new_tab_memo_03.png)
+
+### Settings
+
+Language, Obsidian sync, auto-backup, clipboard paste, and OpenAI (API Key optional).
+
+![Settings — Obsidian, JSON backup, and OpenAI options](config/examples/new_tab_memo_04.png)
 
 ---
 

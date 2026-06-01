@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="newtab.css" />
 </head>
 <body>
+  <input id="jsonImportInput" class="file-input-offscreen" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true" />
+
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-top-chrome">
       <button id="sidebarToggle" class="sidebar-toggle" type="button" data-i18n-aria-label="sidebar.collapse">‹</button>
@@ -199,7 +201,6 @@
         <div class="settings-data-actions">
           <button id="jsonBackupButton" class="toolbar-button" type="button" data-i18n="settings.jsonBackup">JSON Backup</button>
           <button id="jsonImportButton" class="toolbar-button" type="button" data-i18n="settings.jsonImport">JSON Import</button>
-          <input id="jsonImportInput" type="file" accept="application/json,.json" hidden />
         </div>
       </div>
 

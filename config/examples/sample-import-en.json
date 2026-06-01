@@ -1,0 +1,134 @@
+{
+  "exportedAt": "2026-06-01T12:00:00.000Z",
+  "app": "chrome-newtab-memo-board",
+  "appName": "New Tab Memo Board",
+  "version": "1.26.0",
+  "settings": {
+    "globalMarkdownPreview": true,
+    "sidebarCollapsed": false,
+    "obsidianFolder": "Inbox",
+    "obsidianEndpoint": "http://127.0.0.1:27123",
+    "obsidianToken": "",
+    "openaiApiKey": "",
+    "openaiGenerationModel": "",
+    "openaiSystemPrompt": "",
+    "openaiUserPromptMemo": "",
+    "openaiUserPromptUrl": "",
+    "autoBackupEnabled": false,
+    "autoPasteClipboardOnOpen": false,
+    "lastAutoBackupDate": "",
+    "tagFilterOpen": false,
+    "activeTagFilter": "",
+    "uiLocale": "en"
+  },
+  "columns": [
+    {
+      "id": "sample-col-todo",
+      "title": "Tasks",
+      "tiles": [
+        {
+          "id": "sample-tile-todo-1",
+          "title": "",
+          "text": "# Today\n\n- [ ] Reply to design review comments\n- [ ] Ship JSON import sample data\n- [x] Restart Chrome when downloads act weird\n- [ ] Book dentist appointment",
+          "color": "blue",
+          "tags": ["todo", "today"],
+          "markdownPreview": false,
+          "starred": true,
+          "updatedAt": "2026-06-01T09:00:00.000Z"
+        },
+        {
+          "id": "sample-tile-todo-2",
+          "title": "",
+          "text": "# This week\n\n- [ ] Draft Q3 roadmap one-pager\n- [ ] Review open PRs\n- [ ] Update team wiki onboarding page\n\n**Focus:** finish import/export docs before Friday.",
+          "color": "yellow",
+          "tags": ["todo", "work"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-30T14:30:00.000Z"
+        },
+        {
+          "id": "sample-tile-todo-3",
+          "title": "",
+          "text": "# Errands\n\n- [ ] Grocery run: milk, eggs, coffee beans\n- [ ] Dry cleaning pickup\n- [ ] Replace air purifier filter",
+          "color": "green",
+          "tags": ["todo", "personal"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-29T18:15:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "sample-col-work",
+      "title": "Work",
+      "tiles": [
+        {
+          "id": "sample-tile-work-1",
+          "title": "",
+          "text": "# Product sync — 2026-05-30\n\n## Decisions\n- Keep three default columns; allow user-added columns\n- JSON backup excludes API keys\n\n## Action items\n- Taishi: sample import file for QA\n- Team: smoke-test on Chrome restart edge case\n\n## Links\n- Roadmap doc (internal)",
+          "color": "purple",
+          "tags": ["work", "meeting"],
+          "markdownPreview": true,
+          "starred": false,
+          "updatedAt": "2026-05-30T11:00:00.000Z"
+        },
+        {
+          "id": "sample-tile-work-2",
+          "title": "",
+          "text": "# API note — tile export shape\n\nTiles should stay plain objects:\n\n```json\n{\n  \"id\": \"…\",\n  \"text\": \"# Title\\n\\nBody\",\n  \"tags\": [\"work\"],\n  \"color\": \"blue\"\n}\n```\n\nImport runs `normalizeColumns()` so missing fields are filled with defaults.",
+          "color": "gray",
+          "tags": ["work", "dev"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-28T16:45:00.000Z"
+        },
+        {
+          "id": "sample-tile-work-3",
+          "title": "",
+          "text": "# 1:1 with Alex\n\n**Wins**\n- Extension smoke tests green\n- Backup flow uses save picker + background download\n\n**Ask**\n- Priority between i18n polish vs. new AI prompts\n\n**Next**\n- Revisit auto-backup UX after import samples land",
+          "color": "white",
+          "tags": ["work", "1on1"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-27T10:20:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "sample-col-personal",
+      "title": "Personal",
+      "tiles": [
+        {
+          "id": "sample-tile-personal-1",
+          "title": "",
+          "text": "# Sunday journal\n\nSlow morning. Coffee, laundry, short walk.\n\nWant to keep weekends light on screens — maybe read the sci-fi paperback on the shelf.",
+          "color": "pink",
+          "tags": ["personal", "journal"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-06-01T08:30:00.000Z"
+        },
+        {
+          "id": "sample-tile-personal-2",
+          "title": "",
+          "text": "# Weekend ideas\n\n- Try the new ramen place downtown\n- Bike route along the river\n- Organize photo backup to NAS\n- Watch the documentary Mia recommended",
+          "color": "yellow",
+          "tags": ["personal", "ideas"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-31T20:00:00.000Z"
+        },
+        {
+          "id": "sample-tile-personal-3",
+          "title": "",
+          "text": "# Reading queue\n\n1. *Project Hail Mary* — restart chapter 12\n2. Short essay on note-taking systems\n3. Chrome extension MV3 docs (skim permissions section)",
+          "color": "blue",
+          "tags": ["personal", "reading"],
+          "markdownPreview": false,
+          "starred": false,
+          "updatedAt": "2026-05-26T21:10:00.000Z"
+        }
+      ]
+    }
+  ]
+}

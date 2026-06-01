@@ -237,6 +237,50 @@ async def run_checks(client: CdpClient) -> list[tuple[str, bool, str]]:
         )
     )
 
+    backup = await client.evaluate(
+        """
+        (async () => {
+          const dialog = document.getElementById('settingsDialog');
+          const importInput = document.getElementById('jsonImportInput');
+          if (!dialog || !importInput) return { ok: false, reason: 'missing backup ui' };
+          if (dialog.contains(importInput)) {
+            return { ok: false, reason: 'import input still inside dialog' };
+          }
+          if (importInput.hidden) {
+            return { ok: false, reason: 'import input still hidden' };
+          }
+
+          document.getElementById('settingsButton')?.click();
+          await new Promise((r) => setTimeout(r, 250));
+
+          let threw = null;
+          let downloadResult = null;
+          try {
+            downloadResult = await downloadJsonBackup('smoke-backup', { interactive: false });
+          } catch (error) {
+            threw = String(error);
+          }
+          await new Promise((r) => setTimeout(r, 300));
+          dialog.close('cancel');
+
+          const payload = buildBackupPayload();
+          const validation = MemoBoardShared.validateBackupPayload(payload);
+          return {
+            ok: !threw && validation.ok === true && downloadResult?.ok === true,
+            reason: threw || downloadResult?.error || (validation.ok ? 'payload ok' : validation.message || 'invalid payload')
+          };
+        })()
+        """,
+        await_promise=True,
+    )
+    checks.append(
+        (
+            "json backup from settings",
+            isinstance(backup, dict) and backup.get("ok") is True,
+            str(backup),
+        )
+    )
+
     tag_add = await client.evaluate(
         """
         (async () => {

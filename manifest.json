@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "New Tab Memo Board",
     "version": "1.26.0",
-    "description": "Opens a column-style memo board when you open a new tab. Supports tags, Markdown, Obsidian export, OpenAI summary, JSON backup, and web clipping.",
+    "description": "Column-style memo board on new tab. Tags, Markdown, Obsidian export, OpenAI summary, JSON backup, and web clipping.",
     "action": {
       "default_title": "タブメモに保存",
       "default_icon": {
@@ -29,7 +29,8 @@
       "storage",
       "contextMenus",
       "activeTab",
-      "scripting"
+      "scripting",
+      "downloads"
     ],
     "host_permissions": [
       "http://127.0.0.1:27123/*",

@@ -998,6 +998,249 @@ test("sanitizeSettingsForBackup strips API secrets", () => {
   assert.equal(sanitized.globalMarkdownPreview, g.settings.globalMarkdownPreview);
 });
 
+test("buildBackupPayload strips secrets and validates", () => {
+  g.columns = g.MemoBoardShared.makeInitialColumns();
+  g.settings.obsidianToken = "secret-token";
+  g.settings.openaiApiKey = "secret-key";
+
+  const payload = g.buildBackupPayload();
+  const validation = g.MemoBoardShared.validateBackupPayload(payload);
+
+  assert.equal(validation.ok, true);
+  assert.equal(payload.app, g.MemoBoardShared.APP_ID);
+  assert.equal(payload.settings.obsidianToken, "");
+  assert.equal(payload.settings.openaiApiKey, "");
+});
+
+test("downloadJsonBackup uses chrome.downloads when background download is unavailable", async () => {
+  g.columns = g.MemoBoardShared.makeInitialColumns();
+
+  let downloadArgs = null;
+  const previousChrome = g.chrome;
+  const previousAlert = g.alert;
+  g.alert = () => {};
+  g.chrome = {
+    downloads: {
+      download(options, callback) {
+        downloadArgs = options;
+        callback(42);
+      }
+    },
+    runtime: {
+      lastError: null,
+      sendMessage: async () => ({ ok: false, error: "mock fail" })
+    }
+  };
+
+  try {
+    const result = await g.downloadJsonBackup("downloads-test");
+    assert.equal(result.ok, true);
+    assert.ok(downloadArgs);
+    assert.match(downloadArgs.filename, /^downloads-test-\d{8}_\d{6}\.json$/);
+    assert.match(downloadArgs.url, /^blob:/);
+    assert.equal(downloadArgs.saveAs, false);
+  } finally {
+    g.chrome = previousChrome;
+    g.alert = previousAlert;
+  }
+});
+
+test("downloadJsonBackup falls back to anchor when downloads API fails", async () => {
+  g.columns = g.MemoBoardShared.makeInitialColumns();
+
+  const previousChrome = g.chrome;
+  const previousDocument = g.document;
+  const previousAlert = g.alert;
+  g.alert = () => {};
+  g.chrome = {
+    downloads: {
+      download(_options, callback) {
+        callback(undefined);
+      }
+    },
+    runtime: {
+      lastError: { message: "download denied" },
+      sendMessage: async () => ({ ok: false, error: "mock fail" })
+    }
+  };
+
+  const anchorElements = [];
+  g.document = {
+    createElement(tagName) {
+      return {
+        tagName: tagName.toUpperCase(),
+        href: "",
+        download: "",
+        rel: "",
+        style: {},
+        click() {},
+        remove() {}
+      };
+    },
+    documentElement: {
+      appendChild(element) {
+        anchorElements.push(element);
+        return element;
+      }
+    }
+  };
+
+  try {
+    const result = await g.downloadJsonBackup("fallback-test");
+    assert.equal(result.ok, true);
+    assert.equal(anchorElements.length, 1);
+    assert.match(String(anchorElements[0].download), /^fallback-test-\d{8}_\d{6}\.json$/);
+  } finally {
+    g.chrome = previousChrome;
+    g.document = previousDocument;
+    g.alert = previousAlert;
+  }
+});
+
+test("downloadJsonBackupViaBackground requests background download", async () => {
+  let message = null;
+  const previousChrome = g.chrome;
+  g.chrome = {
+    runtime: {
+      sendMessage: async (payload) => {
+        message = payload;
+        return { ok: true, downloadId: 7 };
+      }
+    }
+  };
+
+  try {
+    const result = await g.downloadJsonBackupViaBackground('{"ok":true}', "backup.json");
+    assert.equal(result.ok, true);
+    assert.equal(message.type, "DOWNLOAD_JSON_BACKUP");
+    assert.equal(message.filename, "backup.json");
+    assert.equal(message.jsonText, '{"ok":true}');
+  } finally {
+    g.chrome = previousChrome;
+  }
+});
+
+test("downloadJsonBackup builds payload accepted by validateBackupPayload", async () => {
+  g.columns = g.MemoBoardShared.makeInitialColumns();
+  g.columns[1].tiles[0].text = "backup body";
+  g.settings.obsidianToken = "secret-token";
+  g.settings.openaiApiKey = "secret-key";
+
+  const previousChrome = g.chrome;
+  const previousAlert = g.alert;
+  g.alert = () => {};
+  g.chrome = {
+    runtime: {
+      sendMessage: async () => ({ ok: true, downloadId: 1 })
+    }
+  };
+
+  try {
+    const result = await g.downloadJsonBackup("unit-test-backup");
+    assert.equal(result.ok, true);
+
+    const payload = g.buildBackupPayload();
+    const validation = g.MemoBoardShared.validateBackupPayload(payload);
+    assert.equal(validation.ok, true);
+    assert.equal(payload.settings.obsidianToken, "");
+    assert.equal(payload.settings.openaiApiKey, "");
+  } finally {
+    g.chrome = previousChrome;
+    g.alert = previousAlert;
+  }
+});
+
+test("importJsonBackup replaces columns and preserves API secrets", async () => {
+  g.columns = g.MemoBoardShared.makeInitialColumns();
+  g.columns[0].tiles[0].text = "before import";
+  g.settings.obsidianToken = "keep-token";
+  g.settings.openaiApiKey = "keep-key";
+
+  const backupColumns = g.MemoBoardShared.makeInitialColumns();
+  backupColumns[1].tiles[0].text = "imported memo";
+
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    app: g.MemoBoardShared.APP_ID,
+    columns: backupColumns,
+    settings: {
+      obsidianFolder: "BackupFolder",
+      autoBackupEnabled: false
+    }
+  };
+
+  const previousConfirm = g.confirm;
+  const previousAlert = g.alert;
+  const previousSaveState = g.saveState;
+  const previousRender = g.render;
+  const previousApplyLocale = g.applyLocale;
+  g.confirm = () => true;
+  g.alert = () => {};
+  let saveCalled = false;
+  g.saveState = async () => {
+    saveCalled = true;
+  };
+  let renderCalled = false;
+  g.render = () => {
+    renderCalled = true;
+  };
+  g.applyLocale = () => {};
+
+  try {
+    await g.importJsonBackup({
+      size: JSON.stringify(backup).length,
+      text: async () => JSON.stringify(backup)
+    });
+  } finally {
+    g.confirm = previousConfirm;
+    g.alert = previousAlert;
+    g.saveState = previousSaveState;
+    g.render = previousRender;
+    g.applyLocale = previousApplyLocale;
+  }
+
+  assert.equal(g.columns[1].tiles[0].text, "imported memo");
+  assert.equal(g.settings.obsidianFolder, "BackupFolder");
+  assert.equal(g.settings.autoBackupEnabled, false);
+  assert.equal(g.settings.obsidianToken, "keep-token");
+  assert.equal(g.settings.openaiApiKey, "keep-key");
+  assert.equal(saveCalled, true);
+  assert.equal(renderCalled, true);
+});
+
+test("maybeAutoBackup runs at most once per day", async () => {
+  g.settings.autoBackupEnabled = true;
+  g.settings.lastAutoBackupDate = "";
+
+  let downloadCount = 0;
+  const previousDownload = g.downloadJsonBackup;
+  g.downloadJsonBackup = async () => {
+    downloadCount += 1;
+    return { ok: true };
+  };
+
+  let saveCount = 0;
+  const previousSaveState = g.saveState;
+  g.saveState = async () => {
+    saveCount += 1;
+  };
+
+  try {
+    await g.maybeAutoBackup();
+    assert.equal(downloadCount, 1);
+    assert.equal(saveCount, 1);
+    assert.match(g.settings.lastAutoBackupDate, /^\d{4}-\d{2}-\d{2}$/);
+
+    await g.maybeAutoBackup();
+    assert.equal(downloadCount, 1);
+    assert.equal(saveCount, 1);
+  } finally {
+    g.downloadJsonBackup = previousDownload;
+    g.saveState = previousSaveState;
+    g.settings.lastAutoBackupDate = "";
+  }
+});
+
 test("formatUpdatedDateTime uses locale-specific patterns", () => {
   const date = new Date("2026-05-26T14:30:00");
 

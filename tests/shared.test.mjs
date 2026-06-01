@@ -232,6 +232,20 @@ test("validateBackupPayload rejects foreign app backups by default", () => {
   assert.equal(result.foreignApp, "other-app");
 });
 
+test("sample-import-en.json is a valid import payload", () => {
+  const sample = JSON.parse(
+    readFileSync(join(repoRoot, "config/examples/sample-import-en.json"), "utf8")
+  );
+  const result = S.validateBackupPayload(sample);
+  assert.equal(result.ok, true);
+  assert.equal(sample.columns.length, 3);
+  assert.deepEqual(
+    sample.columns.map((column) => column.title),
+    ["Tasks", "Work", "Personal"]
+  );
+  assert.equal(sample.settings.uiLocale, "en");
+});
+
 test("applyIncomingTiles appends unknown tiles without duplicating ids", () => {
   const local = makeSampleColumns();
   const clipColIndex = S.CLIPPING_COLUMN_INDEX;

@@ -268,6 +268,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return false;
   }
 
+  if (message?.type === "DOWNLOAD_JSON_BACKUP") {
+    (async () => {
+      try {
+        const jsonText = String(message.jsonText || "");
+        const filename = String(message.filename || "newtab-memo-backup.json");
+        if (!jsonText) {
+          sendResponse({ ok: false, error: "empty payload" });
+          return;
+        }
+
+        const blob = new Blob([jsonText], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const downloadId = await chrome.downloads.download({ url, filename, saveAs: false });
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        sendResponse({ ok: Boolean(downloadId), downloadId });
+      } catch (error) {
+        console.error("DOWNLOAD_JSON_BACKUP failed:", error);
+        sendResponse({ ok: false, error: error?.message || "download failed" });
+      }
+    })();
+    return true;
+  }
+
   if (message?.type !== "SAVE_CLIP_FROM_MODAL") return;
 
   (async () => {

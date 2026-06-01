@@ -99,12 +99,26 @@ obsidianSaveButton.addEventListener("click", saveAllFilledTilesToObsidian);
 if (sidebarObsidianSyncButton) {
   sidebarObsidianSyncButton.addEventListener("click", saveAllFilledTilesToObsidian);
 }
-jsonBackupButton.addEventListener("click", () => downloadJsonBackup());
-jsonImportButton.addEventListener("click", () => jsonImportInput.click());
-jsonImportInput.addEventListener("change", async () => {
-  await importJsonBackup(jsonImportInput.files?.[0]);
-  jsonImportInput.value = "";
-});
+if (jsonBackupButton) {
+  jsonBackupButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    downloadJsonBackup().catch((error) => {
+      console.error("downloadJsonBackup failed:", error);
+      alert(t("backup.exportFailed"));
+    });
+  });
+}
+if (jsonImportButton) {
+  jsonImportButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    pickAndImportJsonBackup().catch((error) => {
+      console.error("pickAndImportJsonBackup failed:", error);
+      alert(t("backup.readFailed"));
+    });
+  });
+}
 
 if (sidebarToggle) {
   sidebarToggle.addEventListener("click", async () => {

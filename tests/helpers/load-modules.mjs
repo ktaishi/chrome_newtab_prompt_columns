@@ -229,6 +229,7 @@ export function loadDomainModules(options = {}) {
 
   if (includeBackup) {
     globalThis.columns = [];
+    globalThis.jsonImportInput = null;
     globalThis.saveState = async () => {};
     globalThis.normalizeColumns = globalThis.normalizeColumns;
     globalThis.markStructureDirty = () => {};
