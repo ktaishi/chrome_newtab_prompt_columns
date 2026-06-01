@@ -1064,13 +1064,17 @@ test("newtab.css grows multi-filled add slot into remaining column space", () =>
   );
 });
 
-test("newtab.css uses wider clipping width for clipping and right-side columns", () => {
+test("newtab.css uses 2:1 flex ratio for primary vs secondary columns", () => {
   const css = readFileSync(join(repoRoot, "app/newtab.css"), "utf8");
-  assert.match(css, /--column-width-clipping:\s*calc\(var\(--column-width\)\s*\*\s*4\s*\/\s*5\)/);
-  assert.match(
-    css,
-    /\.column\.column-clipping-width\s*\{[^}]*width:\s*var\(--column-width-clipping\)/s
-  );
+  assert.match(css, /--column-flex-primary:\s*2/);
+  assert.match(css, /--column-flex-secondary:\s*1/);
+  assert.match(css, /--column-width-primary-min:\s*calc\(var\(--column-width\)\s*\*\s*2\s*\/\s*3\)/);
+  assert.match(css, /--column-width-secondary-min:\s*calc\(var\(--column-width-primary-min\)\s*\/\s*2\)/);
+  const primaryBlock = css.match(/\.column\.column-primary\s*\{[^}]+\}/s)?.[0] || "";
+  const clippingWidthBlock = css.match(/\.column\.column-clipping-width\s*\{[^}]+\}/s)?.[0] || "";
+  assert.match(primaryBlock, /flex:\s*var\(--column-flex-primary\)\s+1\s+var\(--column-width-primary-min\)/);
+  assert.match(clippingWidthBlock, /flex:\s*var\(--column-flex-secondary\)\s+1\s+var\(--column-width-secondary-min\)/);
+  assert.match(css, /\.columns\s*\{[^}]*width:\s*100%/s);
 });
 
 test("isTileFilled and getFilledTileCount drive column filled classes", () => {

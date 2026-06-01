@@ -11,7 +11,10 @@
     --sidebar-width: 250px;
     --sidebar-collapsed-width: 38px;
     --column-width: 360px;
-    --column-width-clipping: calc(var(--column-width) * 4 / 5);
+    --column-flex-primary: 2;
+    --column-flex-secondary: 1;
+    --column-width-primary-min: calc(var(--column-width) * 2 / 3);
+    --column-width-secondary-min: calc(var(--column-width-primary-min) / 2);
     --board-add-column-width: 80px;
     --board-column-height: calc(100vh - 24px);
     --board-column-height: calc(100dvh - 24px);
@@ -443,7 +446,7 @@
     align-items: stretch;
     flex: 1 1 auto;
     min-height: 0;
-    width: max-content;
+    width: 100%;
     min-width: 100%;
   }
   
@@ -462,9 +465,10 @@
   }
 
   .column.column-clipping-width {
-    flex: 0 0 var(--column-width-clipping);
-    width: var(--column-width-clipping);
-    min-width: var(--column-width-clipping);
+    flex: var(--column-flex-secondary) 1 var(--column-width-secondary-min);
+    width: auto;
+    min-width: var(--column-width-secondary-min);
+    max-width: none;
   }
 
   .column.column-clipping {
@@ -600,6 +604,10 @@
   }
 
   .column.column-primary {
+    flex: var(--column-flex-primary) 1 var(--column-width-primary-min);
+    width: auto;
+    min-width: var(--column-width-primary-min);
+    max-width: none;
     --tile-preview-lines: 6;
     --tile-preview-font-size: 12px;
     --tile-body-max-height: calc(
@@ -1010,9 +1018,12 @@
     overflow: hidden;
     flex: none;
     min-height: 0;
+    min-width: 0;
     padding: 10px;
     font-size: var(--tile-preview-font-size);
     line-height: var(--tile-preview-line-height);
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .column:not(.column-primary) .tile-body .markdown-preview.is-empty {
