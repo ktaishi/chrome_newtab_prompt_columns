@@ -1,0 +1,40 @@
+# Local session docs
+z_docs/
+
+# macOS
+.DS_Store
+._*
+
+# Editor / IDE
+.cursor/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Secrets (API keys etc.)
+.env
+.env.*
+
+# Chrome extension packaging
+dist/
+*.crx
+*.pem
+*.zip
+
+# Local Stripe URL (commit support-payment.url.example only)
+support-payment.url
+support-payment.url.local
+
+# Node (scripts/*.mjs; no package.json yet)
+node_modules/
+
+# Editor / OS
+.vscode/
+*.code-workspace
+Thumbs.db
+Desktop.ini
