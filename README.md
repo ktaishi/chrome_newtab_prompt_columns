@@ -370,7 +370,7 @@ chrome_newtab_prompt_columns/
 │   ├── clip-save-modal.js/css  # Save modal (page injection)
 │   └── clip-save-toast.js/css  # Save toast (page injection)
 ├── app/newtab.html           # New tab UI (HTML)
-├── newtab.css                # New tab UI (styles)
+├── app/newtab.css            # New tab UI (styles)
 ├── js/
 │   ├── load-order.json       # Script load order
 │   ├── i18n.js / i18n.messages.js / i18n.messages.locales.js

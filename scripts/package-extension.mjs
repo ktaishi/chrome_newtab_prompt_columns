@@ -20,7 +20,7 @@ const ROOT_FILES = [
   "app/background.js",
   "app/shared.js",
   "app/newtab.html",
-  "newtab.css",
+  "app/newtab.css",
   "assets/clip/clip-save-modal.js",
   "assets/clip/clip-save-modal.css",
   "assets/clip/clip-save-toast.js",

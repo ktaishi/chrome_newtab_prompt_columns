@@ -1019,7 +1019,7 @@ test("formatTileUpdatedLabel embeds locale-formatted datetime", () => {
 });
 
 test("newtab.css preserves one-filled column-body grid split for add slot", () => {
-  const css = readFileSync(join(repoRoot, "newtab.css"), "utf8");
+  const css = readFileSync(join(repoRoot, "app/newtab.css"), "utf8");
   const primaryBlock = css.match(/\.column\.column-primary\s*\{[^}]+\}/s)?.[0] || "";
   assert.match(primaryBlock, /min-height:\s*var\(--board-column-height\)/);
   assert.doesNotMatch(primaryBlock, /min-height:\s*0\s*;/);
@@ -1042,7 +1042,7 @@ test("newtab.css preserves one-filled column-body grid split for add slot", () =
 });
 
 test("newtab.css keeps column flex spec when sidebar is open or collapsed", () => {
-  const css = readFileSync(join(repoRoot, "newtab.css"), "utf8");
+  const css = readFileSync(join(repoRoot, "app/newtab.css"), "utf8");
   const columnBlock = css.match(/\.column\s*\{[^}]+\}/s)?.[0] || "";
   assert.match(columnBlock, /flex:\s*1\s+0\s+var\(--column-width\)/);
   assert.match(columnBlock, /min-width:\s*var\(--column-width\)/);
@@ -1053,7 +1053,7 @@ test("newtab.css keeps column flex spec when sidebar is open or collapsed", () =
 });
 
 test("newtab.css grows multi-filled add slot into remaining column space", () => {
-  const css = readFileSync(join(repoRoot, "newtab.css"), "utf8");
+  const css = readFileSync(join(repoRoot, "app/newtab.css"), "utf8");
   assert.match(
     css,
     /\.column\.column-primary\.column-multi-filled \.column-tiles\s*\{[^}]*flex:\s*0\s+1\s+auto/s
@@ -1065,7 +1065,7 @@ test("newtab.css grows multi-filled add slot into remaining column space", () =>
 });
 
 test("newtab.css uses wider clipping width for clipping and right-side columns", () => {
-  const css = readFileSync(join(repoRoot, "newtab.css"), "utf8");
+  const css = readFileSync(join(repoRoot, "app/newtab.css"), "utf8");
   assert.match(css, /--column-width-clipping:\s*calc\(var\(--column-width\)\s*\*\s*4\s*\/\s*5\)/);
   assert.match(
     css,
