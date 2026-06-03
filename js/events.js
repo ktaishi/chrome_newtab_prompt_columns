@@ -161,6 +161,32 @@ if (clearTagFilterButton) {
   clearTagFilterButton.addEventListener("click", () => setActiveTagFilter(""));
 }
 
+if (modalAiChatOpenButton) {
+  modalAiChatOpenButton.addEventListener("click", () => {
+    showModalAiChatOverlay();
+  });
+}
+
+if (modalAiChatCloseButton) {
+  modalAiChatCloseButton.addEventListener("click", () => {
+    dismissModalAiChatOverlay();
+  });
+}
+
+if (modalAiChatCancelButton) {
+  modalAiChatCancelButton.addEventListener("click", () => {
+    dismissModalAiChatOverlay();
+  });
+}
+
+if (modalAiChatOverlay) {
+  modalAiChatOverlay.addEventListener("click", (event) => {
+    if (event.target.classList.contains("modal-ai-chat-backdrop")) {
+      dismissModalAiChatOverlay();
+    }
+  });
+}
+
 if (modalAiSupplementSendButton) {
   modalAiSupplementSendButton.addEventListener("click", () => {
     submitModalAiSupplement().catch((error) => {
@@ -170,10 +196,6 @@ if (modalAiSupplementSendButton) {
 }
 
 if (modalAiSupplementInput) {
-  modalAiSupplementInput.addEventListener("focus", () => {
-    hideModalAiActionButtons();
-  });
-
   modalAiSupplementInput.addEventListener("input", () => {
     updateModalAiSupplementFieldState();
   });
@@ -248,6 +270,8 @@ modalTextarea.addEventListener("input", () => {
   syncModalEditorToTile(tile);
   updateModalMarkdownView();
   updateModalTemplateButtonVisibility(tile);
+  updateModalContentDependentButtons();
+  updateModalAiSupplementFieldState();
   scheduleModalSave();
 });
 
@@ -347,6 +371,10 @@ document.addEventListener("keydown", (event) => {
   if (modalAiBusy) return;
   if (event.key === "Escape" && deleteConfirmDialog?.open) return;
   if (event.key === "Escape" && tagAddDialog?.open) return;
+  if (event.key === "Escape" && isModalAiChatOverlayVisible()) {
+    dismissModalAiChatOverlay();
+    return;
+  }
   if (event.key === "Escape" && isModalAiSupplementPanelVisible()) {
     dismissModalAiActionOverlay();
     return;

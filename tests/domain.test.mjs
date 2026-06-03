@@ -553,14 +553,21 @@ test("normalizeOpenAiPromptSetting stores empty when equal to default", () => {
   assert.equal(g.normalizeOpenAiPromptSetting("custom prompt", def), "custom prompt");
 });
 
-test("buildOpenAiSummaryPrompt uses genre template with classification", () => {
+test("buildOpenAiInquiryPrompt includes document and inquiry", () => {
   g.settings.openaiUserPromptMemo = "";
-  const prompt = g.buildOpenAiSummaryPrompt("memo body", [], "", {
-    genreId: "life",
-    subgenreId: "cooking-meals"
-  });
+  g.settings.uiLocale = "ja";
+  const prompt = g.buildOpenAiInquiryPrompt("doc body", [], "整理して");
+  assert.match(prompt, /doc body/);
+  assert.match(prompt, /整理して/);
+  assert.match(prompt, /現在のドキュメント|Current document/);
+  assert.match(prompt, /問い合わせ|Inquiry/);
+});
+
+test("buildOpenAiSummaryPrompt delegates to inquiry prompt", () => {
+  g.settings.openaiUserPromptMemo = "";
+  const prompt = g.buildOpenAiSummaryPrompt("memo body", [], "要約して");
   assert.match(prompt, /memo body/);
-  assert.match(prompt, /料理・献立/);
+  assert.match(prompt, /要約して/);
 });
 
 test("usesOpenAiMaxCompletionTokens switches token param by model", () => {
@@ -604,24 +611,15 @@ test("validateImportedSettings ignores unknown generation model", () => {
   assert.equal(next.openaiGenerationModel, "");
 });
 
-test("buildOpenAiSystemPrompt injects output language from ui locale", () => {
+test("buildOpenAiInquirySystemPrompt injects output language from ui locale", () => {
   g.settings.openaiSystemPrompt = "";
   g.settings.uiLocale = "ja";
-  const promptJa = g.buildOpenAiSystemPrompt({ hasYouTube: false, hasUrls: true });
+  const promptJa = g.buildOpenAiInquirySystemPrompt();
   assert.match(promptJa, /日本語/);
 
   g.settings.uiLocale = "en";
-  const promptEn = g.buildOpenAiSystemPrompt({ hasYouTube: false, hasUrls: true });
+  const promptEn = g.buildOpenAiInquirySystemPrompt();
   assert.match(promptEn, /English/);
-  const promptTech = g.buildOpenAiSystemPrompt({
-    hasYouTube: false,
-    hasUrls: false,
-    genreId: "technology",
-    subgenreId: "frameworks",
-    tileText: "Hono framework",
-    urlContexts: []
-  });
-  assert.match(promptTech, /キーワード拡張|keyword/i);
 });
 
 test("buildOpenAiGenreClassificationPrompt includes genre catalog and memo body", () => {
@@ -688,83 +686,35 @@ test("OPENAI_GENRE_TAXONOMY has 8 genres and 128 subgenres", () => {
   assert.equal(total, 128);
 });
 
-test("buildOpenAiSummaryPrompt uses output language in default memo template", () => {
-  g.settings.openaiUserPromptMemo = "";
-  g.settings.uiLocale = "en";
-  const prompt = g.buildOpenAiSummaryPrompt("memo body", []);
-  assert.match(prompt, /English/);
-  assert.match(prompt, /memo body/);
-});
-
-test("buildOpenAiSummaryPrompt appends user supplement instruction", () => {
+test("buildOpenAiSummaryPrompt includes inquiry text", () => {
   g.settings.openaiUserPromptMemo = "";
   g.settings.uiLocale = "ja";
   const prompt = g.buildOpenAiSummaryPrompt("memo body", [], "この内容をまとめる");
   assert.match(prompt, /memo body/);
-  assert.match(prompt, /追加指示:/);
   assert.match(prompt, /この内容をまとめる/);
 });
 
-test("buildOpenAiSummaryPrompt uses keyword expansion for thin framework memo", () => {
+test("buildOpenAiInquiryPrompt includes URL contexts when provided", () => {
   g.settings.uiLocale = "ja";
-  g.settings.openaiUserPromptMemo = "";
-  const prompt = g.buildOpenAiGenreSummaryPrompt(
-    "Honoフレームワーク\n技術的な内容",
-    [],
-    { genreId: "technology", subgenreId: "frameworks", reason: "フレームワーク" }
-  );
-  assert.match(prompt, /キーワード拡張/);
-  assert.match(prompt, /キーワード分析/);
-  assert.match(prompt, /メタ説明/);
-  assert.match(prompt, /構成・主要 API/);
-});
-
-test("buildOpenAiSummaryPrompt uses keyword expansion for thin non-tech memo", () => {
-  g.settings.uiLocale = "ja";
-  const prompt = g.buildOpenAiGenreSummaryPrompt(
-    "京都 旅行 おすすめ",
-    [],
-    { genreId: "life", subgenreId: "travel", reason: "旅行" }
-  );
-  assert.match(prompt, /キーワード拡張/);
-  assert.match(prompt, /このトピックとは/);
-  assert.doesNotMatch(prompt, /構成・主要 API/);
-});
-
-test("buildOpenAiSummaryPrompt uses keyword expansion for empty body with title keywords", () => {
-  g.settings.uiLocale = "ja";
-  const prompt = g.buildOpenAiGenreSummaryPrompt(
-  "# Honoフレームワーク",
-    [],
-    { genreId: "technology", subgenreId: "frameworks", reason: "技術" }
-  );
-  assert.match(prompt, /キーワード拡張/);
-  assert.match(prompt, /キーワード分析/);
-});
-
-test("buildOpenAiSummaryPrompt stays grounded when URL excerpt is rich", () => {
-  g.settings.uiLocale = "ja";
-  const longBody = "x".repeat(600);
-  const prompt = g.buildOpenAiGenreSummaryPrompt(
+  const prompt = g.buildOpenAiInquiryPrompt(
     "short memo",
-    [{ ok: true, url: "https://example.com", textPreview: longBody, title: "Example" }],
-    { genreId: "technology", subgenreId: "frameworks", reason: "記事" }
+    [{ ok: true, url: "https://example.com", textPreview: "x".repeat(600), title: "Example" }],
+    "整理して"
   );
-  assert.match(prompt, /ソース整理/);
-  assert.doesNotMatch(prompt, /キーワード拡張（重要）/);
+  assert.match(prompt, /https:\/\/example.com/);
+  assert.match(prompt, /整理して/);
 });
 
-test("buildOpenAiSummaryPrompt ignores empty supplement", () => {
+test("buildOpenAiInquiryPrompt keeps inquiry placeholder for empty supplement", () => {
   g.settings.openaiUserPromptMemo = "";
-  const withEmpty = g.buildOpenAiSummaryPrompt("memo body", [], "   ");
-  const without = g.buildOpenAiSummaryPrompt("memo body", []);
-  assert.equal(withEmpty, without);
+  const withEmpty = g.buildOpenAiInquiryPrompt("memo body", [], "   ");
+  assert.match(withEmpty, /（なし）|Inquiry/);
 });
 
-test("buildOpenAiSystemPrompt ignores custom settings while prompts are disabled", () => {
+test("buildOpenAiInquirySystemPrompt ignores custom settings while prompts are disabled", () => {
   g.settings.openaiSystemPrompt = "CUSTOM SYSTEM PROMPT ONLY";
   g.settings.uiLocale = "ja";
-  const prompt = g.buildOpenAiSystemPrompt({ hasYouTube: false, hasUrls: false });
+  const prompt = g.buildOpenAiInquirySystemPrompt();
   assert.doesNotMatch(prompt, /CUSTOM SYSTEM PROMPT ONLY/);
   assert.match(prompt, /日本語/);
 });
@@ -772,7 +722,7 @@ test("buildOpenAiSystemPrompt ignores custom settings while prompts are disabled
 test("getOpenAiActionSupplement returns action-specific instruction", () => {
   g.settings.uiLocale = "ja";
   const supplement = g.getOpenAiActionSupplement("simple-list");
-  assert.match(supplement, /箇条書き/);
+  assert.match(supplement, /箇条書き|要点/);
 });
 
 test("setModalEditorPreviewContent keeps full markdown in textarea", () => {

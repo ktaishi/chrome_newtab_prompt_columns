@@ -305,6 +305,57 @@
     </div>
 
     <div class="tile-dialog-panel" data-color="white">
+      <div id="modalAiChatOverlay" class="modal-ai-chat-overlay" hidden>
+        <div class="modal-ai-chat-backdrop" aria-hidden="true"></div>
+        <div
+          class="modal-ai-chat-sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modalAiChatTitle"
+        >
+          <div class="modal-ai-chat-header">
+            <h3 id="modalAiChatTitle" class="modal-ai-chat-title" data-i18n="modal.aiChatTitle">AI問い合わせ</h3>
+            <button
+              id="modalAiChatCloseButton"
+              class="dialog-close modal-ai-chat-close"
+              type="button"
+              data-i18n-aria-label="common.close"
+              aria-label="閉じる"
+            >
+              ×
+            </button>
+          </div>
+          <textarea
+            id="modalAiSupplementInput"
+            class="modal-ai-supplement-input"
+            rows="6"
+            spellcheck="false"
+            data-i18n-aria-label="modal.aiSupplementLabel"
+            data-i18n-placeholder="modal.aiSupplementPlaceholder"
+            aria-label="AIへの追加指示"
+            placeholder="AIへの追加指示（例: 初心者向けにもう少し詳しく / 箇条書きを増やして）"
+          ></textarea>
+          <div class="modal-ai-chat-footer">
+            <button
+              id="modalAiChatCancelButton"
+              class="toolbar-button modal-ai-chat-cancel"
+              type="button"
+              data-i18n="delete.cancel"
+            >
+              キャンセル
+            </button>
+            <button
+              id="modalAiSupplementSendButton"
+              class="toolbar-button modal-ai-chat-send"
+              type="button"
+              data-i18n="modal.aiSupplementSend"
+            >
+              送信
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-body">
         <div class="modal-editor-scroll">
           <div class="modal-actions modal-actions-bar">
@@ -385,37 +436,20 @@
             </div>
           </div>
 
-          <div id="modalAiSupplementField" class="modal-ai-supplement-field" hidden>
-            <div class="modal-ai-supplement-compose">
-              <textarea
-                id="modalAiSupplementInput"
-                class="modal-ai-supplement-input"
-                rows="1"
-                spellcheck="false"
-                data-i18n-aria-label="modal.aiSupplementLabel"
-                data-i18n-placeholder="modal.aiSupplementPlaceholder"
-                aria-label="AIへの追加指示"
-                placeholder="AIへの追加指示（例: 初心者向けにもう少し詳しく / 箇条書きを増やして）"
-              ></textarea>
-              <button
-                id="modalAiSupplementSendButton"
-                class="icon-button modal-ai-supplement-send"
-                type="button"
-                data-i18n-aria-label="modal.aiSupplementSend"
-                data-i18n-title="modal.aiSupplementSend"
-                aria-label="送信"
-                title="送信"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M3.4 20.4 21 12 3.4 3.6l1.8 7.2L16 12l-10.8 1.2-1.8 7.2Z"/>
-                </svg>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
       <div class="modal-bottom">
+        <div id="modalAiChatTrigger" class="modal-ai-chat-trigger" hidden>
+          <button
+            id="modalAiChatOpenButton"
+            class="modal-ai-chat-open-button"
+            type="button"
+            data-i18n="modal.aiChatOpen"
+          >
+            AIに問い合わせ
+          </button>
+        </div>
         <div class="modal-color-field">
           <div id="modalColorPalette" class="color-palette modal-color-palette" data-i18n-aria-label="modal.tileColor" aria-label="タイル色">
             <button class="color-chip" type="button" data-color="white" data-i18n-aria-label="modal.color.white" aria-label="白"></button>

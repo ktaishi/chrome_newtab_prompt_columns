@@ -29,13 +29,43 @@ function modalHasAiSourceContent() {
   return Boolean(sourceText.trim());
 }
 
+function isModalAiChatOverlayVisible() {
+  return Boolean(modalAiChatOverlay && !modalAiChatOverlay.hidden);
+}
+
+function hideModalAiChatOverlay() {
+  if (modalAiChatOverlay) modalAiChatOverlay.hidden = true;
+}
+
+function showModalAiChatOverlay() {
+  if (!modalAiChatOverlay || !isOpenAiConfigured() || modalAiBusy) return;
+  hideModalAiActionButtons();
+  modalAiChatOverlay.hidden = false;
+  updateModalAiSupplementFieldState();
+  window.setTimeout(() => modalAiSupplementInput?.focus(), 0);
+}
+
+function dismissModalAiChatOverlay() {
+  if (!isModalAiChatOverlayVisible() || modalAiBusy) return;
+  hideModalAiChatOverlay();
+  updateOpenAiButtonStates();
+}
+
+function hideOpenAiModalUi() {
+  if (modalAiButton) modalAiButton.hidden = true;
+  if (modalAiChatTrigger) modalAiChatTrigger.hidden = true;
+  hideModalAiChatOverlay();
+  hideModalAiActionButtons();
+  resetModalAiUserSupplement();
+}
+
 function updateModalAiSupplementFieldState() {
   const configured = isOpenAiConfigured();
   const hasContent = modalHasAiSourceContent();
   const hasUserSupplement = Boolean(getModalAiUserSupplement());
 
-  if (modalAiSupplementField) {
-    modalAiSupplementField.hidden = !configured;
+  if (modalAiChatTrigger) {
+    modalAiChatTrigger.hidden = !configured;
   }
   if (modalAiSupplementInput) {
     modalAiSupplementInput.disabled = Boolean(modalAiBusy);
@@ -66,6 +96,7 @@ async function submitModalAiSupplement() {
   }
 
   hideModalAiActionButtons();
+  hideModalAiChatOverlay();
   await handleModalAiSummary("summary", { userSupplementOnly: true });
 }
 
@@ -81,12 +112,14 @@ function setModalAiActionButtonsDisabled(disabled) {
 
 function resetModalAiSupplementPanel() {
   hideModalAiActionButtons();
+  hideModalAiChatOverlay();
   setModalAiActionButtonsDisabled(false);
   resetModalAiUserSupplement();
 }
 
 function showModalAiSupplementPanel() {
-  if (!modalAiSupplementPanel) return;
+  if (!modalAiSupplementPanel || !isOpenAiConfigured()) return;
+  hideModalAiChatOverlay();
   modalAiSupplementPanel.hidden = false;
   setModalAiActionButtonsDisabled(false);
   const firstButton = modalAiActionButtons[0];
@@ -101,10 +134,16 @@ function dismissModalAiActionOverlay() {
 }
 
 function updateOpenAiButtonStates() {
-  if (!modalAiButton) return;
-  modalAiButton.hidden = !isOpenAiConfigured();
-  if (!modalAiBusy) {
-    modalAiButton.classList.remove("ai-busy");
+  if (!isOpenAiConfigured()) {
+    hideOpenAiModalUi();
+    return;
+  }
+
+  if (modalAiButton) {
+    modalAiButton.hidden = false;
+    if (!modalAiBusy) {
+      modalAiButton.classList.remove("ai-busy");
+    }
   }
   setModalAiActionButtonsDisabled(modalAiBusy);
   updateModalAiSupplementFieldState();

@@ -1947,6 +1947,7 @@
   }
   
   .tile-dialog-panel {
+    position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -2506,42 +2507,130 @@
     border-color: var(--primary);
   }
 
-  .modal-ai-supplement-field {
-    flex-shrink: 0;
-    display: grid;
-    margin-top: auto;
-    padding: 12px 18px 16px;
-    border-top: none;
-    background: transparent;
-    position: sticky;
-    bottom: 0;
-    z-index: 3;
-  }
-
-  .tile-dialog-panel:has(#modalAiSupplementField:not([hidden])) .modal-bottom {
-    border-top: none;
-  }
-
-  .modal-ai-supplement-compose {
+  .modal-ai-chat-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 18px;
+  }
+
+  .modal-ai-chat-overlay[hidden] {
+    display: none !important;
+  }
+
+  .modal-ai-chat-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-ai-chat-sheet {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: min(100%, 560px);
+    max-height: min(78vh, 640px);
+    padding: 22px 22px 20px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.99);
+    border: 1px solid rgba(124, 58, 237, 0.16);
+    box-shadow: 0 22px 56px rgba(91, 33, 182, 0.16);
+  }
+
+  .modal-ai-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .modal-ai-chat-title {
+    margin: 0;
+    color: #312e81;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .modal-ai-chat-close {
+    flex-shrink: 0;
+  }
+
+  .modal-ai-chat-footer {
+    display: flex;
+    justify-content: flex-end;
     gap: 10px;
   }
 
-  .modal-ai-supplement-input {
-    flex: 1;
-    min-width: 0;
-    min-height: 52px;
-    max-height: 160px;
+  .modal-ai-chat-send {
+    color: #fff;
+    background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+    border-color: transparent;
+  }
+
+  .modal-ai-chat-send:hover:not(:disabled) {
+    color: #fff;
+    filter: brightness(1.05);
+  }
+
+  .modal-ai-chat-send:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .modal-ai-chat-trigger {
+    margin-bottom: 12px;
+  }
+
+  .modal-ai-chat-trigger[hidden] {
+    display: none !important;
+  }
+
+  .modal-ai-chat-open-button {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 16px;
     border: 1px solid rgba(124, 58, 237, 0.28);
     border-radius: 12px;
+    background: linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%);
+    color: #6d28d9;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  }
+
+  .modal-ai-chat-open-button:hover:not(:disabled) {
+    border-color: rgba(124, 58, 237, 0.48);
+    box-shadow: 0 8px 22px rgba(124, 58, 237, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .modal-ai-chat-open-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .modal-ai-supplement-input {
+    width: 100%;
+    min-width: 0;
+    min-height: 168px;
+    max-height: min(320px, 42vh);
+    border: 1px solid rgba(124, 58, 237, 0.28);
+    border-radius: 14px;
     outline: none;
-    padding: 14px 14px 14px 18px;
+    padding: 14px 16px;
     color: var(--text);
-    background: transparent;
-    font-size: 16px;
-    line-height: 1.5;
-    resize: none;
+    background: #fff;
+    font-size: 15px;
+    line-height: 1.55;
+    resize: vertical;
   }
 
   .modal-ai-supplement-input::placeholder {
@@ -2560,32 +2649,6 @@
 
   .modal-ai-supplement-input:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .modal-ai-supplement-send {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    color: #6d28d9;
-    border-color: rgba(124, 58, 237, 0.28);
-    background: linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%);
-  }
-
-  .modal-ai-supplement-send svg {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-  }
-
-  .modal-ai-supplement-send:hover:not(:disabled) {
-    color: #5b21b6;
-    border-color: rgba(124, 58, 237, 0.55);
-    background: linear-gradient(135deg, #f3e8ff 0%, #dbeafe 100%);
-  }
-
-  .modal-ai-supplement-send:disabled {
-    opacity: 0.45;
     cursor: not-allowed;
   }
   

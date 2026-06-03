@@ -6,6 +6,35 @@
  * - キーワード拡張: 本文が空/薄いとき → キーワード分析のうえ内容を構築（ジャンル不問）
  */
 const OPENAI_PROMPT_DEFAULTS = {
+  aiInquirySystem: `You answer inquiries about the user's memo document in {{OUTPUT_LANGUAGE}} (UI: {{UI_LOCALE}}).
+
+Output format (strict):
+- Line 1: \`%%TITLE%%\` + concise title (max 50 characters, no Markdown # prefix)
+- Line 2: empty line
+- Line 3 onward: body in Markdown
+
+Rules:
+- Base your answer on the current document, the inquiry, and URL excerpts when provided
+- Do not invent facts that are not supported by those sources
+- No preface or postscript outside the title/body structure
+- Use paragraphs, lists, and headings only when they help answer the inquiry`,
+
+  aiInquiryUser: `Answer the inquiry using the current document below. Output Markdown only in the required format.
+
+Output language: {{OUTPUT_LANGUAGE}} (UI: {{UI_LOCALE}})
+
+---
+Current document:
+{{DOCUMENT}}
+
+---
+Inquiry:
+{{INQUIRY}}
+
+---
+URL page information (reference):
+{{URL_CONTEXTS}}`,
+
   aiTitleRule: `出力形式（厳守）:
 - 1行目: \`%%TITLE%%\` + 50文字以内の簡潔なタイトル（内容を代表する短い名前。Markdown見出し記号 # は付けない）
 - 2行目: 空行

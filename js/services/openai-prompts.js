@@ -67,11 +67,11 @@ function formatUrlContextsForPrompt(contexts) {
 }
 
 function getDefaultOpenAiSystemPrompt(locale) {
-  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("system"), locale);
+  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("aiInquirySystem"), locale);
 }
 
 function getDefaultOpenAiUserPromptMemo(locale) {
-  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("genreSummaryUser"), locale);
+  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("aiInquiryUser"), locale);
 }
 
 function getDefaultOpenAiGenreClassificationSystem(locale) {
@@ -83,7 +83,7 @@ function getDefaultOpenAiGenreClassificationUser(locale) {
 }
 
 function getDefaultOpenAiUserPromptUrl(locale) {
-  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("userUrl"), locale);
+  return withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("aiInquiryUser"), locale);
 }
 
 function applyOpenAiPromptTemplate(template, variables = {}) {
@@ -202,6 +202,29 @@ function buildOpenAiKeywordExpansionScript(genre, subgenre, tileText, options = 
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+function buildOpenAiInquirySystemPrompt() {
+  const localeVars = getOpenAiPromptLocaleVariables();
+  const template = resolveOpenAiPromptForExecution(
+    settings.openaiSystemPrompt,
+    getDefaultOpenAiSystemPrompt(localeVars.UI_LOCALE)
+  );
+  return applyOpenAiPromptTemplate(template, localeVars);
+}
+
+function buildOpenAiInquiryPrompt(documentText, urlContexts, inquiry) {
+  const localeVars = getOpenAiPromptLocaleVariables();
+  const template = resolveOpenAiPromptForExecution(
+    settings.openaiUserPromptMemo,
+    withOpenAiPromptLocale(getOpenAiPromptDefaultTemplate("aiInquiryUser"), localeVars.UI_LOCALE)
+  );
+  return applyOpenAiPromptTemplate(template, {
+    ...localeVars,
+    DOCUMENT: String(documentText || "").trim() || "（空）",
+    INQUIRY: String(inquiry || "").trim() || "（なし）",
+    URL_CONTEXTS: formatUrlContextsForPrompt(urlContexts || [])
+  });
 }
 
 function buildOpenAiSystemPrompt({
@@ -394,15 +417,8 @@ function buildSpeechPolishUserPrompt(speechBody) {
   });
 }
 
-function buildOpenAiSummaryPrompt(tileText, urlContexts, supplement, classification, actionId) {
-  if (classification?.genreId && classification?.subgenreId) {
-    return buildOpenAiGenreSummaryPrompt(tileText, urlContexts, classification, supplement, actionId);
-  }
-  const hasUrls = Array.isArray(urlContexts) && urlContexts.length > 0;
-  const basePrompt = hasUrls
-    ? buildOpenAiUserPromptUrl(tileText, urlContexts)
-    : buildOpenAiUserPromptMemo(tileText);
-  return appendOpenAiSupplementToPrompt(basePrompt, supplement);
+function buildOpenAiSummaryPrompt(documentText, urlContexts, inquiry) {
+  return buildOpenAiInquiryPrompt(documentText, urlContexts, inquiry);
 }
 
 function appendOpenAiSupplementToPrompt(prompt, supplement) {

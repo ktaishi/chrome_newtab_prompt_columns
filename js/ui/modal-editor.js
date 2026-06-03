@@ -494,7 +494,7 @@ function isModalPreviewExcludedElement(element) {
   if (!element?.closest) return false;
   return Boolean(
     element.closest(
-      ".modal-tags-field, .modal-tag-add-link, .modal-ai-supplement-field, .modal-footer, .modal-actions, .modal-color-field, .modal-ai-supplement-panel, .confirm-actions"
+      ".modal-tags-field, .modal-tag-add-link, .modal-ai-chat-trigger, .modal-ai-chat-overlay, .modal-footer, .modal-actions, .modal-color-field, .modal-ai-supplement-panel, .confirm-actions"
     )
   );
 }

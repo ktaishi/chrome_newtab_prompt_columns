@@ -90,13 +90,7 @@ function sanitizeAiOutputLines(markdown) {
 }
 
 function normalizeAiMarkdown(markdown) {
-  return sanitizeAiOutputLines(
-    String(markdown || "")
-      .replace(/^##\s*AIサマリー\s*\n+/i, "")
-      .replace(/^##\s*URLサマリー\s*\n+/im, "")
-      .replace(/\n##\s*URLサマリー\s*\n+/gi, "\n")
-      .replace(/(?:^|\n)---(?:\n|$)/g, "\n")
-  );
+  return sanitizeAiOutputLines(String(markdown || "").trim());
 }
 
 function resolvePrimaryUrlContext(urlContexts, urls) {
@@ -319,27 +313,9 @@ function stripExistingAiSummary(text) {
 }
 
 function insertAiSummaryIntoText(tileText, aiMarkdown, urlSourceText, options = {}) {
-  const allUrls = options.urls?.length
-    ? options.urls
-    : extractUrlsFromText(urlSourceText ?? tileText);
-  const parsed = parseAiGeneratedTitle(aiMarkdown);
-  const aiBlock = normalizeAiMarkdown(parsed.body);
-
-  if (allUrls.length) {
-    return buildUrlTileDocument(
-      options.urlContexts || [],
-      aiBlock,
-      allUrls,
-      options.existingTitle,
-      parsed.title
-    );
-  }
-
-  if (parsed.title) {
-    return composeTileDocumentWithTitle(parsed.title, aiBlock);
-  }
-
-  return aiBlock;
+  const parsed = parseAiGeneratedTitle(normalizeAiMarkdown(aiMarkdown));
+  const title = resolveAiSummaryTitle(parsed.title, options.existingTitle, "");
+  return composeTileDocumentWithTitle(title, parsed.body);
 }
 
 function applyAiSummaryToModal(aiMarkdown, baseText, urlContexts = [], preservedUrls = [], existingTitle = "") {
@@ -348,17 +324,11 @@ function applyAiSummaryToModal(aiMarkdown, baseText, urlContexts = [], preserved
   const tile = columns[activeModal.colIndex]?.tiles[activeModal.tileIndex];
   if (!tile) return;
 
-  const sourceText = baseText ?? getModalTextFromUi();
-  const urlSourceText = getModalTextFromUi() || sourceText;
+  const urlSourceText = getModalTextFromUi() || baseText;
   const resolvedExistingTitle = existingTitle || resolveAiExistingTitle(urlSourceText, tile);
-  const allUrls = preservedUrls.length
-    ? preservedUrls
-    : extractUrlsFromText(urlSourceText || sourceText);
-  const nextText = insertAiSummaryIntoText(sourceText, aiMarkdown, urlSourceText, {
-    urlContexts,
-    urls: allUrls,
-    existingTitle: resolvedExistingTitle
-  });
+  const parsed = parseAiGeneratedTitle(normalizeAiMarkdown(aiMarkdown));
+  const title = resolveAiSummaryTitle(parsed.title, resolvedExistingTitle, "");
+  const nextText = composeTileDocumentWithTitle(title, parsed.body);
   tile.text = nextText;
   markTileDirty(tile.id);
   syncTileTitleFromText(tile);
@@ -372,45 +342,44 @@ function applyAiSummaryToModal(aiMarkdown, baseText, urlContexts = [], preserved
   syncBoardTileById(tile.id);
 }
 
-async function runTileAiSummary(bodyText, urlContexts, supplement, onProgress, actionId) {
+async function prepareUrlContextsForAiInquiry(sourceText) {
+  const documentText = stripExistingAiSummary(String(sourceText || "")).trim();
+  const urls = extractUrlsFromText(documentText);
+  const urlContexts = await Promise.all(urls.map((url) => fetchUrlPageContextForAi(url)));
+  return { documentText, urlContexts };
+}
+
+async function runTileAiSummary(documentText, urlContexts, supplement, onProgress) {
   const apiKey = settings.openaiApiKey?.trim();
   if (!apiKey) throw new Error("OpenAI API Keyが未設定です。");
 
-  const normalizedBody = stripExistingAiSummary(bodyText).trim();
-  if (!normalizedBody) throw new Error("サマリー対象の本文がありません。");
+  const normalizedDocument = stripExistingAiSummary(documentText).trim();
+  if (!normalizedDocument) throw new Error("問い合わせ対象のドキュメントがありません。");
+
+  const inquiry = String(supplement ?? "").trim();
+  if (!inquiry) {
+    throw new Error(typeof t === "function" ? t("openai.noInquiry") : "問い合わせ文がありません。");
+  }
 
   const contexts = urlContexts || await Promise.all(
-    extractUrlsFromText(normalizedBody).map((url) => fetchUrlPageContextForAi(url))
+    extractUrlsFromText(normalizedDocument).map((url) => fetchUrlPageContextForAi(url))
   );
-  const hasUrls = contexts.length > 0;
-  const hasYouTube = urlContextsIncludeYouTube(contexts);
-
-  if (typeof onProgress === "function") {
-    onProgress("classifying");
-  }
-  const classification = await classifyTileContentGenre(apiKey, normalizedBody, contexts);
 
   if (typeof onProgress === "function") {
     onProgress("generating");
   }
-  const prompt = buildOpenAiGenreSummaryPrompt(
-    normalizedBody,
-    contexts,
-    classification,
-    supplement,
-    actionId
-  );
-  const aiMarkdown = await callOpenAiChat(apiKey, prompt, {
-    hasYouTube,
-    hasUrls,
-    genreId: classification.genreId,
-    subgenreId: classification.subgenreId,
-    tileText: normalizedBody,
+
+  const systemPrompt = buildOpenAiInquirySystemPrompt();
+  const userPrompt = buildOpenAiInquiryPrompt(normalizedDocument, contexts, inquiry);
+  const aiMarkdown = await callOpenAiChat(apiKey, userPrompt, {
+    systemPrompt,
+    hasUrls: contexts.length > 0,
+    tileText: normalizedDocument,
     urlContexts: contexts,
     model: resolveOpenAiGenerationModel(settings.openaiGenerationModel)
   });
 
-  return { aiMarkdown, classification };
+  return { aiMarkdown };
 }
 
 async function prepareUrlMetadataForAi(tile, sourceText) {
@@ -545,7 +514,6 @@ async function handleModalAiSummary(actionId, options = {}) {
     ? getModalAiUserSupplement()
     : buildModalAiSupplement(actionId);
   if (options.userSupplementOnly && !supplement) return;
-  const fetchUrls = extractUrlsFromText(stripExistingAiSummary(sourceText));
 
   modalAiBusy = true;
   stopModalSpeechInput();
@@ -560,20 +528,19 @@ async function handleModalAiSummary(actionId, options = {}) {
     const tile = columns[activeModal.colIndex]?.tiles[activeModal.tileIndex];
     const existingTitle = resolveAiExistingTitle(sourceText, tile);
     setAiLoadingMessage(t("modal.aiFetchingUrls"));
-    const { bodyText, urlContexts } = await prepareUrlMetadataForAi(tile, sourceText);
-    setAiLoadingMessage(t("modal.aiClassifyingGenre"));
+    const { documentText, urlContexts } = await prepareUrlContextsForAiInquiry(sourceText);
+    setAiLoadingMessage(t("modal.aiGenerating"));
     const { aiMarkdown } = await runTileAiSummary(
-      bodyText,
+      documentText,
       urlContexts,
       supplement,
       (phase) => {
         if (phase === "generating") {
           setAiLoadingMessage(t("modal.aiGenerating"));
         }
-      },
-      actionId
+      }
     );
-    applyAiSummaryToModal(aiMarkdown, bodyText, urlContexts, fetchUrls, existingTitle);
+    applyAiSummaryToModal(aiMarkdown, documentText, urlContexts, [], existingTitle);
     resetModalAiSupplementPanel();
   } catch (error) {
     alert(t("openai.failed", { error: error?.message || t("openai.unknownError") }));
